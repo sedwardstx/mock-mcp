@@ -6,8 +6,11 @@ telemetry methods are added in later stories.
 
 from __future__ import annotations
 
+from pydantic import BaseModel
+
 from .loader import Dataset
 from .models import AzureResource, Ticket
+from .query import query_rows
 
 
 class Repository:
@@ -58,3 +61,29 @@ class Repository:
         matched = [s.ticket for s in self._dataset.scenarios if matches(s.ticket)]
         total = len(matched)
         return matched[offset : offset + limit], total
+
+    def query_telemetry(
+        self,
+        table: str,
+        resource_id: str,
+        *,
+        time_range: str | None = None,
+        instance_id: str | None = None,
+        filters: dict[str, object] | None = None,
+    ) -> list[BaseModel]:
+        """Query one telemetry table for a resource via the shared query semantic.
+
+        `table` is a Telemetry attribute name (e.g. 'arm_control_plane_traces').
+        Gathers that table's rows across all scenarios (deterministic order),
+        then scopes by resource_id / time_range / instance_id / filters.
+        """
+        rows: list[BaseModel] = []
+        for scenario in self._dataset.scenarios:
+            rows.extend(getattr(scenario.telemetry, table))
+        return query_rows(
+            rows,
+            resource_id=resource_id,
+            time_range=time_range,
+            instance_id=instance_id,
+            filters=filters,
+        )
