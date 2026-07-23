@@ -9,6 +9,10 @@ telemetry.
 All data is mocked and embedded — **no Azure subscription, credentials, or
 internet access is required at runtime.**
 
+> 🎓 **Students:** see the **[Student Handbook](docs/student-handbook.md)** for a
+> step-by-step guide to connecting your agent and running your first (and
+> multi-round) investigations.
+
 ## Quickstart
 
 ```bash
