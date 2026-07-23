@@ -73,7 +73,66 @@ Once connected (either transport), have your agent call the **`get_server_info`*
 tool. It returns the server name, version, and status (`ok`) — confirming your
 agent is talking to the Contoso Support server.
 
-> The ticket and telemetry tools arrive in later stories.
+## Client configuration (`mcp.json`)
+
+Add **one** of the following server entries to your MCP client's config so your
+agent can discover the Contoso Support server. Most clients (Claude Code, Claude
+Desktop, Cursor) use the `mcpServers` shape below.
+
+### Offline — student self-hosted (stdio)
+
+The client launches the server as a subprocess over stdio. Replace the path with
+where you cloned this repo (`--directory` makes it work from any location).
+
+```json
+{
+  "mcpServers": {
+    "contoso-support": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/absolute/path/to/mock-mcp",
+        "contoso-support-mcp",
+        "--transport",
+        "stdio"
+      ]
+    }
+  }
+}
+```
+
+> Prerequisite: run `uv sync` once in the repo first. On Windows, keep the path
+> as a JSON string, e.g. `"C:\\\\Users\\\\you\\\\mock-mcp"`.
+
+### Online — instructor-hosted (streamable HTTP)
+
+The instructor runs one server for the class
+(`uv run contoso-support-mcp --transport http --host 0.0.0.0 --port 8000`);
+students only need the URL — no local install. Replace `INSTRUCTOR_HOST` with the
+instructor machine's hostname or IP.
+
+```json
+{
+  "mcpServers": {
+    "contoso-support": {
+      "type": "http",
+      "url": "http://INSTRUCTOR_HOST:8000/mcp"
+    }
+  }
+}
+```
+
+**Where this file lives** depends on your client:
+
+- **Claude Code** — `.mcp.json` at your project root (or run `claude mcp add`).
+- **Claude Desktop** — the `mcpServers` block inside `claude_desktop_config.json`.
+- **Cursor** — `.cursor/mcp.json`.
+- **VS Code** — `.vscode/mcp.json`, but use the key `servers` instead of
+  `mcpServers` (the per-server entry is otherwise the same).
+
+After adding the entry, restart/reload your client and call `get_server_info`
+to confirm the connection.
 
 ## Guided prompts
 
