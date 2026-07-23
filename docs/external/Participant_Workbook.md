@@ -10,7 +10,7 @@ Audience: Technical support engineers · Mixed skill levels
 
 Format: 2 days · ~70% hands-on labs / 30% instruction · ~6.5 hrs/day
 
-*Example company: “Contoso” — Gateway (networking), Vault (auth), Store (database)*
+*Example company: “Contoso” — running on Azure. Support domains: Compute (Azure Virtual Machines & VM Scale Sets), Networking (NSGs/connectivity), and the ARM control-plane (deployments, scale, allocation).*
 
 ## How to Use This Workbook
 
@@ -115,11 +115,11 @@ Instruction plus a live demo. Key ideas:
 
 ### Lab 1 — First Agent-Mode Task + Team Instructions (60 min)
 
-**Goal:** Get comfortable in agent mode and capture team context so Copilot answers like an Contoso support engineer.
+**Goal:** Get comfortable in agent mode and capture team context so Copilot answers like a Contoso Azure support engineer.
 
 #### Steps
 
-1.  In the Chat view, switch to **Agent** mode. Type: Investigate samples/logs/gateway-500.log and tell me the likely cause. Watch it read the file, reason, and report. Approve any read actions it requests.
+1.  In the Chat view, switch to **Agent** mode. Type: Investigate samples/logs/arm-allocation-failure.log and tell me the likely cause. Watch it read the file, reason, and report. Approve any read actions it requests.
 
 2.  Note how it forms a hypothesis. Ask a follow-up: Which exact log line supports that?
 
@@ -131,17 +131,17 @@ Instruction plus a live demo. Key ideas:
 ---
 applyTo: "**"
 ---
-# Contoso Support Engineering — Copilot Instructions
+# Contoso Azure Support Engineering — Copilot Instructions
 ## About us
-- We provide Tier 2/3 support for the Contoso Cloud Platform.
-- Products: Contoso Gateway (networking), Contoso Vault (auth), Contoso Store (database).
+- We provide Tier 2/3 support for customer workloads running on Microsoft Azure.
+- Domains: Azure Compute (Virtual Machines & VM Scale Sets), Azure Networking (NSGs / connectivity), and the Azure Resource Manager (ARM) control-plane (deployments, scale, allocation, policy).
 ## How to help
 - Prefer concrete, reproducible diagnostic steps over speculation.
-- Always cite the log line, metric, or config value that supports a conclusion.
+- Always cite the telemetry row, log line, metric, or config value that supports a conclusion.
 - Never include customer PII in examples, summaries, or write-ups.
 ## Escalation
-- P1 (customer outage) -> page on-call per the runbook, then post in #sev.
-- Only Tier 3 may recommend changes to production configuration.
+- Sev1 (customer outage) -> page on-call per the runbook, then post in #sev.
+- Only Tier 3 may recommend changes to production Azure resources.
 ```
 
 4.  Save the file. Re-run a similar question in a **new** chat and notice how the instructions shape the answer — it should now cite evidence and respect the PII and escalation rules automatically.
@@ -149,20 +149,21 @@ applyTo: "**"
 5.  Commit the file so your team gets it: git add .github/copilot-instructions.md && git commit -m "Add team Copilot instructions"
 
 > **✓ Checkpoint**
-> The instructions file is committed, and a fresh agent answer cites a specific log line from gateway-500.log.
+> The instructions file is committed, and a fresh agent answer cites a specific log line from arm-allocation-failure.log.
 
-> **→ Stretch** — Add a scoped instructions file that only applies to SQL, then open a `.sql` file and a non-SQL file and confirm the guidance only applies to the SQL file.
+> **→ Stretch** — Add a scoped instructions file that only applies to KQL, then open a `.kql` file (e.g. `samples/queries/allocation-failures.kql`) and a non-KQL file and confirm the guidance only applies to the KQL file.
 
-**.github/instructions/db.instructions.md**
+**.github/instructions/kql.instructions.md**
 
 ```markdown
 ---
-applyTo: "**/*.sql"
+applyTo: "**/*.kql"
 ---
-# SQL-specific guidance
-- Prefer parameterized queries; never inline user input.
-- Call out full table scans and missing indexes.
-- Flag any statement that writes to production data for human review.
+# KQL / log-analytics guidance
+- Always add an explicit time filter (e.g. TimeGenerated between (...)); never run an unbounded scan.
+- Scope by resource: filter on _ResourceId / the resource id you're investigating.
+- project only the columns you need; avoid search * across a whole table.
+- Flag any query that could surface customer PII (caller identities, client IPs) for review.
 ```
 
 ### Module 2 — Reusable Prompts (30 min)
@@ -221,7 +222,7 @@ Return the draft only; a human will review before sending.
 > Both prompts appear under / and each produces useful output on a sample ticket.
 
 > **→ Stretch**
-> Add an argument-hint (already present above) and pass an argument, e.g. /summarize-ticket samples/tickets/CONTOSO-4821.md.
+> Add an argument-hint (already present above) and pass an argument, e.g. /summarize-ticket samples/tickets/TICKET-10000001.md.
 > Try setting agent: 'ask' versus agent: 'agent' in the frontmatter and observe the difference in how the prompt runs.
 
 **— LUNCH (60 min) —**
@@ -253,7 +254,7 @@ Return the draft only; a human will review before sending.
 ```markdown
 ---
 name: log-triage
-description: Triage application and gateway logs to find the root-cause error. Use when a user shares a log file, stack trace, or error output and needs the likely cause and next step.
+description: Triage Azure control-plane, network (NSG), and compute host/guest logs to find the root-cause signal. Use when a user shares an Azure log file, activity-log excerpt, NSG flow log, or error output and needs the likely cause and next step.
 argument-hint: path to a log file or pasted log lines
 ---
 # Log Triage
@@ -284,7 +285,7 @@ import re
 import sys
 from collections import Counter
 LEVEL = re.compile(r"\b(ERROR|FATAL)\b")
-CODE = re.compile(r"\bCONTOSO-\d{4}\b")
+CODE = re.compile(r"\bAZURE-\d{4}\b")
 def main(path: str) -> None:
 counts: Counter = Counter()
 first_seen: dict[str, str] = {}
@@ -312,19 +313,20 @@ main(sys.argv[1])
 **.github/skills/log-triage/error-codes.md**
 
 ```markdown
-# Contoso error code reference (excerpt)
+# Azure error / signal reference (excerpt)
 | Code | Component | Likely cause | First remediation |
 |------|-----------|--------------|-------------------|
-| CONTOSO-1001 | Gateway | Upstream timeout | Check upstream health + timeout config |
-| CONTOSO-1002 | Gateway | TLS handshake failure | Verify cert chain / expiry |
-| CONTOSO-2003 | Store | Connection pool exhausted | Check max connections + leaked sessions |
-| CONTOSO-2007 | Store | Replication lag > threshold | Inspect replica load; failover if stale |
-| CONTOSO-3005 | Vault | Token expired / clock skew | Sync NTP; re-issue token |
+| AZURE-1001 | ARM control-plane | Allocation/capacity failure (SKU unavailable in zone/region) | Retry in another zone or resize the SKU; request capacity/quota |
+| AZURE-2003 | Network (NSG) | Outbound/inbound Deny by an NSG rule | Review the effective NSG rules for the flow; amend/reprioritize |
+| AZURE-3005 | Compute host | Unplanned host degradation / platform event | Confirm in host logs; reimage/redeploy; use availability zones |
+| AZURE-4008 | Compute guest | In-guest Windows service crash (SCM event 7031) | Inspect the in-guest Event Log and the application; host is healthy |
+
+> On Day 2 the Contoso Support MCP server exposes `search_known_issues` — a live, read-only version of this table. Prefer it once MCP is connected.
 ```
 
-5.  Test auto-trigger: in Agent mode ask a natural question such as Here's a gateway log with a 500 — what's the root cause? and confirm the skill loads on its own.
+5.  Test auto-trigger: in Agent mode ask a natural question such as Here's an Azure VM log with an allocation failure — what's the root cause? and confirm the skill loads on its own.
 
-6.  Force it manually: run /log-triage samples/logs/gateway-500.log and confirm the helper script runs and returns a ranked summary.
+6.  Force it manually: run /log-triage samples/logs/arm-allocation-failure.log and confirm the helper script runs and returns a ranked summary.
 
 > **✓ Checkpoint**
 > The skill triggers automatically from a natural question AND via the /log-triage slash command, and the helper script runs and prints a ranked error list.
@@ -359,40 +361,42 @@ Recap the five layers; Q&A; preview Day 2 (MCP + specialist agents + coordinator
 
 #### Steps
 
-1.  Create the file .vscode/mcp.json for the mock contoso-ticketing (stdio) and contoso-kb (http) servers, using the content below.
+1.  Create the file .vscode/mcp.json for the **Contoso Support MCP server**. Use the **stdio** block if you're running the server locally from this repo (offline), or the **http** block to connect to the instructor-hosted server.
 
-**.vscode/mcp.json**
+**.vscode/mcp.json** (offline — student self-hosted, stdio)
 
 ```json
 {
-"inputs": [
-{
-"type": "promptString",
-"id": "contoso-api-token",
-"description": "Contoso internal API token",
-"password": true
-}
-],
-"servers": {
-"contoso-ticketing": {
-"type": "stdio",
-"command": "npx",
-"args": ["-y", "@contoso/mcp-ticketing"]
-},
-"contoso-kb": {
-"type": "http",
-"url": "https://mcp.internal.contoso.example/kb",
-"headers": {
-"Authorization": "Bearer ${input:contoso-api-token}"
-}
-}
-}
+  "servers": {
+    "contoso-support": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--directory", "${workspaceFolder}", "contoso-support-mcp", "--transport", "stdio"]
+    }
+  }
 }
 ```
 
-2.  When prompted, accept the **trust dialog**. Then run MCP: List Servers from the Command Palette to confirm both are running and view their tools.
+**.vscode/mcp.json** (online — instructor-hosted, streamable HTTP)
 
-3.  In Agent mode, ask a question that requires a tool call, e.g. Look up ticket CONTOSO-4821 and summarize it. Approve the tool call when prompted.
+```json
+{
+  "servers": {
+    "contoso-support": {
+      "type": "http",
+      "url": "http://INSTRUCTOR_HOST:8000/mcp"
+    }
+  }
+}
+```
+
+> No `inputs`/token is needed — the mock server requires no secrets. The `inputs` + `${input:id}` secrets pattern is still covered as a general best practice in Module 7.
+
+2.  When prompted, accept the **trust dialog**. Then run MCP: List Servers from the Command Palette to confirm the server is running and view its tools (you should see get_ticket, search_tickets, the four query_* telemetry tools, and search_known_issues).
+
+3.  In Agent mode, ask a question that requires a tool call, e.g. Look up ticket TICKET-10000001, get its resources, then query the ARM control-plane traces for that resource and tell me the root cause. Approve the tool calls when prompted.
+
+> **This server also exposes MCP prompts.** Try the `/mcp` prompt picker for `triage_ticket`, `investigate_incident`, and `summarize_rca` (each takes a ticket_id, e.g. TICKET-10000001). Prompts are a third MCP primitive alongside tools and resources.
 
 4.  Open **Configure Tools** and toggle one tool off, then re-ask and observe the effect.
 
@@ -402,7 +406,7 @@ Recap the five layers; Q&A; preview Day 2 (MCP + specialist agents + coordinator
 > At least one MCP tool call succeeds inside agent mode (e.g., a ticket lookup returns data).
 
 > **→ Stretch**
-> Point contoso-kb at the real internal server using an inputs token (as shown in the config), and curate the tool set down to least privilege.
+> Switch between the offline stdio server and the instructor-hosted http endpoint. Then open **Configure Tools** and curate down to least privilege — e.g. allow only `get_ticket`, `get_ticket_resources`, `query_arm_traces`, and `search_known_issues`.
 
 ### Module 5 — Custom Agents (45 min)
 
@@ -412,7 +416,7 @@ Recap the five layers; Q&A; preview Day 2 (MCP + specialist agents + coordinator
 
 - Selecting an agent from the agents dropdown; user-invocable.
 
-- Note the old name (“custom chat modes”; files were .chatmode.md) so people reading older blogs aren’t confused. Demo a db-diagnostics agent.
+- Note the old name (“custom chat modes”; files were .chatmode.md) so people reading older blogs aren’t confused. Demo a compute-diagnostics agent.
 
 ### Lab 5 — Build a Specialist Troubleshooting Agent (75 min)
 
@@ -420,38 +424,43 @@ Recap the five layers; Q&A; preview Day 2 (MCP + specialist agents + coordinator
 
 #### Steps
 
-1.  Create the file .github/agents/db-diagnostics.agent.md with the content below: a tight persona, restricted tools, a reference to the log-triage skill in its body, and the ticketing/KB MCP tools.
+1.  Create the file .github/agents/compute-diagnostics.agent.md with the content below: a tight persona, restricted tools, a reference to the log-triage skill in its body, and the Contoso Support MCP tools.
 
-**.github/agents/db-diagnostics.agent.md**
+**.github/agents/compute-diagnostics.agent.md**
 
 ```markdown
 ---
-description: Specialist for Contoso Store (database) issues — connection errors, slow queries, replication lag.
-tools: ['codebase', 'contoso-ticketing', 'contoso-kb']
+name: compute-diagnostics
+description: Specialist for Azure Compute issues (Virtual Machines & VM Scale Sets) — host/platform events and in-guest Windows faults.
+tools: ['codebase', 'contoso-support']
 model: Claude Sonnet
 ---
-You are a Tier 3 database support specialist for Contoso Store.
+You are a Tier 3 Azure Compute support specialist (VMs and VM Scale Sets).
 When given a problem:
 1. If logs are provided, use the log-triage skill first.
-2. Check the ticket and the KB via the Contoso MCP tools for known issues.
-3. Stay in your lane — connections, queries, indexes, replication. If the issue is
-clearly network or auth, say so and name the specialist who should take it.
-Ground every conclusion in a specific log line, metric, or query plan.
+2. Scope with get_ticket / get_ticket_resources to the affected resource_id, and check
+   the KB via search_known_issues for generic remediation.
+3. Investigate with query_compute_host_logs (platform/host events) and, when the host
+   looks healthy, query_compute_guest_logs (in-guest Windows events). For a VMSS, scope
+   by instance_id; iterate host↔guest if the first look is inconclusive.
+4. Stay in your lane — compute host and guest. If the issue is clearly network or ARM
+   control-plane, say so and name network-diagnostics or controlplane-diagnostics.
+Ground every conclusion in a specific telemetry row (event_name, health_status, event_id).
 Never recommend a production change without a rollback step.
 ```
 
 > ℹ Note
-> The tool names in tools: must match exactly what appears in the Configure Tools picker for your workspace — the list above is representative. network-diagnostics and auth-diagnostics are the same template with the domain swapped (Gateway / Vault).
+> The tool names in tools: reference the MCP server by its mcp.json key (contoso-support); the persona body names the specific tools. network-diagnostics and controlplane-diagnostics are the same template with the domain swapped: network-diagnostics uses query_network_logs (Azure Networking / NSGs); controlplane-diagnostics uses query_arm_traces (ARM deployments, scale, allocation, policy).
 
-2.  Test it: open the **agents dropdown**, select db-diagnostics, and throw a database symptom at it. Confirm it uses the log-triage skill and stays in its lane.
+2.  Test it: open the **agents dropdown**, select compute-diagnostics, and throw an Azure VM/VMSS symptom at it. Confirm it uses the log-triage skill and stays in its lane.
 
-3.  **Group assignment:** each group builds a different specialist — db-diagnostics, network-diagnostics, or auth-diagnostics — so Lab 6 has real sub-agents to route to.
+3.  **Group assignment:** each group builds a different specialist — compute-diagnostics, network-diagnostics, or controlplane-diagnostics — so Lab 6 has real sub-agents to route to.
 
 > **✓ Checkpoint**
 > The specialist appears in the agents dropdown and stays in its lane — it defers issues outside its domain and names the right specialist.
 
 > **→ Stretch**
-> Pin a model; tighten tools to least privilege; and add a KB-only “read-only” variant of the specialist.
+> Pin a model; tighten tools to least privilege; and add a KB-only “read-only” variant of the specialist whose only tool is `search_known_issues`.
 
 **— LUNCH (60 min) —**
 
@@ -479,16 +488,16 @@ Never recommend a production change without a rollback step.
 ---
 description: General support triage front door. Classifies an incoming issue and routes it to the right specialist agent.
 tools: ['agent']
-agents: ['db-diagnostics', 'network-diagnostics', 'auth-diagnostics']
+agents: ['compute-diagnostics', 'network-diagnostics', 'controlplane-diagnostics']
 handoffs:
 - label: 'Draft the resolution'
 agent: ticket-writer
-prompt: 'Write up the resolution for the issue we just diagnosed.'
+prompt: 'Write up the resolution for the Azure issue we just diagnosed.'
 ---
-You are the front-line support triage coordinator.
+You are the front-line Azure support triage coordinator.
 Your job is NOT to fix the problem yourself. It is to:
 1. Ask 1–2 clarifying questions if the symptom is ambiguous.
-2. Classify the issue: database (Store), network (Gateway), or auth (Vault).
+2. Classify the issue: compute (VM/VMSS host or in-guest), network (NSG/connectivity), or control-plane (ARM deployment / scale / allocation / policy).
 3. Delegate to the matching specialist using the agent tool.
 4. If it spans domains, coordinate specialists in sequence and synthesize their findings.
 5. If nothing matches, ask for more detail rather than guessing.
@@ -496,9 +505,9 @@ After a diagnosis is confirmed, offer the "Draft the resolution" handoff.
 Never send customer-facing text without human review.
 ```
 
-2.  Select support-triage from the agents dropdown. Throw an **ambiguous** problem at it, e.g. Customers intermittently can't log in and some queries time out. Watch it ask a clarifying question, classify, and route.
+2.  Select support-triage from the agents dropdown. Throw an **ambiguous** problem at it, e.g. A VM came back online by itself overnight and a config change we pushed earlier failed — what happened? Watch it ask a clarifying question (e.g. exact time window), classify, and route.
 
-3.  Now throw a **cross-domain** problem and confirm it coordinates specialists in sequence and synthesizes their findings.
+3.  Now throw a **cross-domain** problem, e.g. VMSS instances are failing their health probes AND a recent scale-out didn't add capacity — and confirm it coordinates specialists in sequence and synthesizes. (For a "don't stop at the first query" case, try TICKET-10000026: the in-guest logs look benign, so the coordinator's compute specialist must pivot to the host logs to find the real cause.)
 
 4.  After a diagnosis, accept the **Draft the resolution** handoff and confirm it hands off to the ticket-writer flow (human-review gate).
 

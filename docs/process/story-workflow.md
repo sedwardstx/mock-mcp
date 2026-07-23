@@ -45,4 +45,4 @@ Standard pipeline run for **every** story, autonomously, pausing only for genuin
 | 5.1 | Known-Issues KB Tool | ✅ Done (Gate PASS) |
 | 5.2 | Day-1 Workshop Starter Scaffold | ✅ Done (Gate PASS) |
 | 5.3 | Day-2 Custom Agents | ✅ Done (Gate PASS) |
-| 5.4 | Workbook Azure Re-Theme | Pending |
+| 5.4 | Workbook Azure Re-Theme | ✅ Done (Gate PASS) |
