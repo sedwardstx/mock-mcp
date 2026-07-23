@@ -1,0 +1,42 @@
+scenario_id: TICKET-10000002
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000002
+  title: "App cannot reach backend — connections timing out"
+  symptom: >-
+    Developer reports their application on VMSS 'api-vmss' can no longer reach
+    the backend database on port 1433; connections time out intermittently after
+    a recent network change.
+  azure_product: "Azure Networking"
+  persona: azure_developer
+  severity: Sev2
+  status: Active
+  created_at: "2026-06-02T14:05:00Z"
+  updated_at: "2026-06-02T15:10:00Z"
+  resource_ids:
+    - "/subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-api/providers/Microsoft.Compute/virtualMachineScaleSets/api-vmss"
+resources:
+  - resource_id: "/subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-api/providers/Microsoft.Compute/virtualMachineScaleSets/api-vmss"
+    resource_type: "Microsoft.Compute/virtualMachineScaleSets"
+    name: "api-vmss"
+    resource_group: "rg-api"
+    subscription_id: "00000000-0000-0000-0000-000000000002"
+    location: "westus2"
+    instances:
+      - "api-vmss_0"
+      - "api-vmss_1"
+telemetry: {}
+root_cause:
+  category: network
+  summary: >-
+    A recently added NSG deny rule blocks outbound TCP 1433, dropping the
+    application's connections to the backend database.
+  resolution: >-
+    Amend the NSG rule to allow outbound TCP 1433 to the database subnet (or
+    reorder rules so the allow precedes the deny).
+investigation_path:
+  - order: 1
+    tool: query_network_logs
+    params:
+      time_range: "2026-06-02T14:00:00Z/2026-06-02T15:00:00Z"
+    reveals: "Outbound TCP 1433 flows with Action=Deny matching the new NSG rule."
