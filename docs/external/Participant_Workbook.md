@@ -92,6 +92,10 @@ Welcome, workshop goals, agenda, and ground rules: pair up mixed-skill, and ask 
 
 - Open the starter repo.
 
+- **Put the starter assets in place.** A reference bundle is provided at `docs/assets/workshop/`. Copy it into the repo root so Copilot/VS Code discover it and the labs' `samples/…` paths resolve:
+  `cp -a docs/assets/workshop/.github docs/assets/workshop/.vscode docs/assets/workshop/samples .`
+  (Or build each file yourself during the labs — the bundle is the reference copy.)
+
 - Open the **Chat view** and switch to **Agent** mode.
 
 - Confirm the model picker shows models.
