@@ -1,0 +1,4 @@
+2026-05-27T09:59:00Z INFO  HOST  node=HN-EASTUS-4471 event=HealthCheck health=Healthy msg="Routine health check passed"
+2026-05-27T10:05:00Z INFO  HOST  node=HN-EASTUS-4471 event=HealthCheck health=Healthy msg="Routine health check passed"
+2026-05-27T10:06:30Z WARN  HOST  node=HN-EASTUS-9920 maintenance=Unplanned signal="node health declining"
+2026-05-27T10:07:00Z ERROR AZURE-3005 HOST node=HN-EASTUS-9920 event=HostDegraded health=Degraded maintenance=Unplanned msg="Host node reported a degraded state affecting this instance"

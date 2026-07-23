@@ -1,0 +1,4 @@
+2026-06-02T14:31:00Z INFO  NET   flow=Outbound src=10.2.0.4:51544 dst=10.9.0.10:443  proto=TCP action=Allow rule=AllowHttpsOutbound bytes=12288
+2026-06-02T14:32:10Z INFO  NET   flow=Outbound src=10.2.0.4:51550 dst=10.9.0.10:443  proto=TCP action=Allow rule=AllowHttpsOutbound bytes=8192
+2026-06-02T14:33:00Z WARN  NET   nsg rule change applied: DenyDbOutbound (priority 200)
+2026-06-02T14:33:20Z ERROR AZURE-2003 NET flow=Outbound src=10.2.0.4:51602 dst=10.9.0.20:1433 proto=TCP action=Deny rule=DenyDbOutbound packets_sent=3 packets_received=0

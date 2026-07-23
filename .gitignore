@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Workshop sample logs are content, not build artifacts — track them despite *.log above
+!docs/assets/workshop/samples/logs/*.log

@@ -1,0 +1,4 @@
+2026-05-14T09:05:12Z INFO  ARM   op=Microsoft.Compute/virtualMachines/read status=Succeeded http=200 caller=admin@contoso.example resource=prod-web-01
+2026-05-14T09:08:44Z INFO  ARM   op=Microsoft.Compute/virtualMachines/read status=Succeeded http=200 caller=admin@contoso.example resource=prod-web-01
+2026-05-14T09:11:40Z WARN  ARM   zone=1 sku=Standard_D4s_v5 capacity signal low for region eastus
+2026-05-14T09:12:03Z ERROR AZURE-1001 ARM op=Microsoft.Compute/virtualMachines/start/action status=Failed http=409 subStatus=AllocationFailed msg="SKU Standard_D4s_v5 not available in availability zone 1" resource=prod-web-01
