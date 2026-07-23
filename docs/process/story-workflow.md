@@ -27,7 +27,7 @@ Standard pipeline run for **every** story, autonomously, pausing only for genuin
 |-------|-------|--------|
 | 1.1 | Project Scaffold & Health Tool (stdio) | ✅ Done (Gate PASS) |
 | 1.2 | Network Transport Mode | ✅ Done (Gate PASS) |
-| 1.3 | Configuration & Classroom Run Docs | Pending |
+| 1.3 | Configuration & Classroom Run Docs | ✅ Done (Gate PASS) |
 | 2.1 | Scenario & Ticket Data Model + Loader | Pending |
 | 2.2 | Ticket Retrieval Tools (List & Get) | Pending |
 | 2.3 | Ticket Search & Filter Tool | Pending |
