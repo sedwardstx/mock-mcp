@@ -123,13 +123,93 @@ instructor machine's hostname or IP.
 }
 ```
 
-**Where this file lives** depends on your client:
+The `mcpServers` shape above works for **Claude Code** (`.mcp.json` at the project
+root, or `claude mcp add`), **Claude Desktop** (`claude_desktop_config.json`), and
+**Cursor** (`.cursor/mcp.json`). VS Code and the GitHub Copilot CLI use slightly
+different schemas — see below.
 
-- **Claude Code** — `.mcp.json` at your project root (or run `claude mcp add`).
-- **Claude Desktop** — the `mcpServers` block inside `claude_desktop_config.json`.
-- **Cursor** — `.cursor/mcp.json`.
-- **VS Code** — `.vscode/mcp.json`, but use the key `servers` instead of
-  `mcpServers` (the per-server entry is otherwise the same).
+### VS Code (`.vscode/mcp.json`)
+
+VS Code uses a top-level **`servers`** key and an explicit `type`.
+
+Offline — student self-hosted (stdio):
+
+```json
+{
+  "servers": {
+    "contoso-support": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/absolute/path/to/mock-mcp",
+        "contoso-support-mcp",
+        "--transport",
+        "stdio"
+      ]
+    }
+  }
+}
+```
+
+Online — instructor-hosted (streamable HTTP):
+
+```json
+{
+  "servers": {
+    "contoso-support": {
+      "type": "http",
+      "url": "http://INSTRUCTOR_HOST:8000/mcp"
+    }
+  }
+}
+```
+
+### GitHub Copilot CLI (`~/.copilot/mcp-config.json`)
+
+Copilot CLI uses the `mcpServers` key but with `type: "local"` for stdio servers
+and a `tools` field (`["*"]` allows all tools).
+
+Offline — student self-hosted (local/stdio):
+
+```json
+{
+  "mcpServers": {
+    "contoso-support": {
+      "type": "local",
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/absolute/path/to/mock-mcp",
+        "contoso-support-mcp",
+        "--transport",
+        "stdio"
+      ],
+      "env": {},
+      "tools": ["*"]
+    }
+  }
+}
+```
+
+Online — instructor-hosted (streamable HTTP):
+
+```json
+{
+  "mcpServers": {
+    "contoso-support": {
+      "type": "http",
+      "url": "http://INSTRUCTOR_HOST:8000/mcp",
+      "tools": ["*"]
+    }
+  }
+}
+```
+
+> Copilot CLI stores this at `~/.copilot/mcp-config.json` (override the directory
+> with `COPILOT_HOME`); you can also add servers interactively with `/mcp add`.
 
 After adding the entry, restart/reload your client and call `get_server_info`
 to confirm the connection.
