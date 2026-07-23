@@ -38,7 +38,7 @@ Standard pipeline run for **every** story, autonomously, pausing only for genuin
 | 3.3 | Network Log Query Tool | ✅ Done (Gate PASS) |
 | 3.4 | Compute Log Query Tools | ✅ Done (Gate PASS) |
 | 3.5 | Telemetry Backfill & Multi-Round Authoring | ✅ Done (Gate PASS) |
-| 4.1 | Expand Scenario Library to 100+ | Pending |
+| 4.1 | Expand Scenario Library to 100+ | ✅ Done (Gate PASS) |
 | 4.2 | Difficulty Tagging & Multi-Round Distribution | Pending |
 | 4.3 | Guided MCP Prompts | Pending |
 | 4.4 | Full-Library Consistency & Classroom Readiness | Pending |

@@ -1,0 +1,62 @@
+scenario_id: TICKET-10000084
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000084
+  title: Control-plane operation failing on deploy-84
+  symptom: Customer reports a management operation on 'deploy-84' fails immediately in the portal.
+  azure_product: Azure Virtual Machine Scale Sets
+  persona: azure_developer
+  severity: Sev4
+  status: Active
+  created_at: '2026-05-04T10:00:00Z'
+  updated_at: '2026-05-04T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachineScaleSets/deploy-84
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachineScaleSets/deploy-84
+  resource_type: Microsoft.Compute/virtualMachineScaleSets
+  name: deploy-84
+  resource_group: rg-dev-4
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: eastus
+  instances:
+  - deploy-84_0
+  - deploy-84_1
+telemetry:
+  arm_control_plane_traces:
+  - time_generated: '2026-05-04T09:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachineScaleSets/deploy-84
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    resource_group: rg-dev-4
+    correlation_id: corr-4-a
+    operation_name: Microsoft.Compute/virtualMachines/read
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 200
+    level: Informational
+    activity_status: Succeeded
+    sub_status: OK
+    properties: Routine read.
+  - time_generated: '2026-05-04T09:12:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachineScaleSets/deploy-84
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    resource_group: rg-dev-4
+    correlation_id: corr-4-b
+    operation_name: Microsoft.Compute/virtualMachines/write
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 409
+    level: Error
+    activity_status: Failed
+    sub_status: OperationFailed
+    properties: Control-plane operation failed.
+root_cause:
+  category: arm
+  summary: The ARM control-plane operation fails (error status) for the resource.
+  resolution: Inspect the failed operation in ARM traces; correct the request and retry.
+investigation_path:
+- order: 1
+  tool: query_arm_traces
+  params:
+    time_range: 2026-05-04T08:00:00Z/2026-05-04T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

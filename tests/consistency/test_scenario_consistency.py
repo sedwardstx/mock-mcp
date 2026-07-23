@@ -17,8 +17,16 @@ def test_shipped_library_loads_and_is_consistent():
 
 
 def test_batch_size_grows():
-    """2.5/3.5: the library has grown to a substantial size (>=20; ~60 after 3.5)."""
+    """2.5/3.5: the library has grown to a substantial size (>=20)."""
     assert len(_library()) >= 20
+
+
+def test_library_reaches_100():
+    """4.1-UNIT-001: the library contains >= 100 distinct scenarios."""
+    dataset = _library()
+    assert len(dataset) >= 100
+    ids = [s.ticket.ticket_id for s in dataset.scenarios]
+    assert len(set(ids)) == len(ids)  # unique
 
 
 def test_multi_round_scenarios_present_and_documented():

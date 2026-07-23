@@ -332,7 +332,7 @@ def build_scenario(num, persona, product, rtype, category, name, rg,
 def _specs():
     for entry in CURATED:
         yield (*entry, False)  # curated 4-20 are single-round
-    for num in range(21, 61):
+    for num in range(21, 104):
         persona = "windows_admin" if num % 2 else "azure_developer"
         category = CATEGORIES[num % 4]
         rtype = "vmss" if num % 6 == 0 else "vm"

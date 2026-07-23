@@ -47,3 +47,14 @@ async def test_multi_round_rca_requires_second_query():
         host = await client.call_tool("query_compute_host_logs", {"resource_id": rid})
         host_rows = host.structuredContent["rows"]
         assert any(r["health_status"] == "Degraded" for r in host_rows)
+
+
+async def test_high_numbered_scenario_resolves_end_to_end():
+    """4.1-E2E-001: a high-numbered generated scenario works ticket→resource→telemetry."""
+    async with client_session(build_server()) as client:
+        ticket = await client.call_tool("get_ticket", {"ticket_id": "TICKET-10000100"})
+        assert ticket.structuredContent["status"] == "ok"
+        rid = await _resource_id_for(client, "TICKET-10000100")
+        # TICKET-10000100 has an ARM root cause → the ARM query surfaces the failure.
+        traces = await client.call_tool("query_arm_traces", {"resource_id": rid})
+        assert any(r["activity_status"] == "Failed" for r in traces.structuredContent["rows"])
