@@ -3,7 +3,7 @@ difficulty: single_round
 ticket:
   ticket_id: TICKET-10000017
   title: DNS resolution failing from VM
-  symptom: Developer reports 'dns-vm-01' cannot resolve external hostnames since a recent change.
+  symptom: Developer reports 'dns-vm-01' cannot resolve external hostnames.
   azure_product: Azure Networking
   persona: azure_developer
   severity: Sev2
@@ -20,14 +20,45 @@ resources:
   subscription_id: 00000000-0000-0000-0000-000000000002
   location: westus2
   instances: []
-telemetry: {}
+telemetry:
+  network_logs:
+  - time_generated: '2026-05-18T14:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net2/providers/Microsoft.Compute/virtualMachines/dns-vm-01
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.1.10
+    source_port: 51544
+    destination_port: 443
+    protocol: TCP
+    action: Allow
+    nsg_rule_name: AllowHttpsOutbound
+    bytes_sent: 4096
+    bytes_received: 8192
+    packets_sent: 12
+    packets_received: 14
+  - time_generated: '2026-05-18T14:33:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net2/providers/Microsoft.Compute/virtualMachines/dns-vm-01
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.2.20
+    source_port: 51602
+    destination_port: 1433
+    protocol: TCP
+    action: Deny
+    nsg_rule_name: DenyOutbound
+    bytes_sent: 0
+    bytes_received: 0
+    packets_sent: 3
+    packets_received: 0
 root_cause:
   category: network
-  summary: An NSG rule blocks outbound DNS (UDP/TCP 53) from the VM.
+  summary: An NSG rule blocks outbound DNS (port 53) from the VM.
   resolution: Allow outbound 53 to the DNS resolver in the NSG.
 investigation_path:
 - order: 1
   tool: query_network_logs
   params:
-    time_range: 2026-05-18T09:00:00Z/2026-05-18T11:00:00Z
-  reveals: Traffic matching the reported flow shows Action=Deny in the network logs.
+    time_range: 2026-05-18T08:00:00Z/2026-05-18T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

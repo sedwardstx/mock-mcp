@@ -33,8 +33,8 @@ telemetry:
     health_status: Healthy
     maintenance_type: None
     level: Informational
-    message: Routine health check passed for the instance.
-  - time_generated: '2026-05-09T10:07:30Z'
+    message: Routine health check passed.
+  - time_generated: '2026-05-09T10:07:00Z'
     resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data/providers/Microsoft.Compute/virtualMachineScaleSets/data-vmss
     subscription_id: 00000000-0000-0000-0000-000000000001
     instance_id: data-vmss_0
@@ -43,7 +43,7 @@ telemetry:
     health_status: Degraded
     maintenance_type: Unplanned
     level: Error
-    message: Host node reported degraded state affecting this instance.
+    message: Host node reported a degraded state.
 root_cause:
   category: compute_host
   summary: A platform host degradation affected specific nodes hosting those instances.
@@ -52,5 +52,5 @@ investigation_path:
 - order: 1
   tool: query_compute_host_logs
   params:
-    time_range: 2026-05-09T09:00:00Z/2026-05-09T11:00:00Z
-  reveals: A platform host event affecting the resource appears in the host logs.
+    time_range: 2026-05-09T08:00:00Z/2026-05-09T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

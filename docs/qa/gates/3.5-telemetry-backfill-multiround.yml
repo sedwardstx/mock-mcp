@@ -1,0 +1,25 @@
+schema: 1
+story: "3.5"
+story_title: "Telemetry Backfill & Multi-Round Scenario Authoring"
+gate: PASS
+status_reason: "All 60 scenarios carry root-cause evidence (consistency-verified); 7 multi-round scenarios with documented 2-step paths; e2e flows prove single- and multi-round RCA end to end."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T22:45:00Z"
+top_issues: []
+waiver: { active: false }
+quality_score: 100
+expires: "2026-08-06T22:45:00Z"
+evidence:
+  tests_reviewed: 7
+  risks_identified: 4
+  trace: { ac_covered: [1, 2, 3, 4, 5, 6], ac_gaps: [] }
+nfr_validation:
+  security: { status: PASS, notes: "Mocked data; strict schema + evidence validation." }
+  performance: { status: PASS, notes: "60 scenarios load/query instantly." }
+  reliability: { status: PASS, notes: "Telemetry-evidence consistency gate + e2e RCA flows." }
+  maintainability: { status: PASS, notes: "Deterministic generator owns 4-60; consistency check auto-guards future growth." }
+recommendations:
+  immediate: []
+  future:
+    - action: "Epic 4.2 raises multi_round proportion to >=25% (currently ~12%)."
+      refs: ["scripts/author_seed_scenarios.py"]

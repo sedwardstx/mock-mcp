@@ -22,14 +22,41 @@ resources:
   instances:
   - img-vmss_0
   - img-vmss_1
-telemetry: {}
+telemetry:
+  arm_control_plane_traces:
+  - time_generated: '2026-05-17T09:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-img/providers/Microsoft.Compute/virtualMachineScaleSets/img-vmss
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    resource_group: rg-img
+    correlation_id: corr-17-a
+    operation_name: Microsoft.Compute/virtualMachines/read
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 200
+    level: Informational
+    activity_status: Succeeded
+    sub_status: OK
+    properties: Routine read.
+  - time_generated: '2026-05-17T09:12:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-img/providers/Microsoft.Compute/virtualMachineScaleSets/img-vmss
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    resource_group: rg-img
+    correlation_id: corr-17-b
+    operation_name: Microsoft.Compute/virtualMachines/write
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 409
+    level: Error
+    activity_status: Failed
+    sub_status: OperationFailed
+    properties: Control-plane operation failed.
 root_cause:
   category: arm
-  summary: The control-plane operation returns a 404 for the referenced image (bad/missing image reference).
+  summary: The control-plane operation returns a 404 for the referenced image.
   resolution: Correct the image reference (id/version) and recreate the scale set.
 investigation_path:
 - order: 1
   tool: query_arm_traces
   params:
-    time_range: 2026-05-17T09:00:00Z/2026-05-17T11:00:00Z
-  reveals: Control-plane operation failed with an error status in the ARM traces.
+    time_range: 2026-05-17T08:00:00Z/2026-05-17T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

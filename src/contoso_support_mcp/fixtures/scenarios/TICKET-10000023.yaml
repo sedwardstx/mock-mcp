@@ -1,0 +1,56 @@
+scenario_id: TICKET-10000023
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000023
+  title: In-guest Windows fault on guest-23
+  symptom: Customer reports an application/service on 'guest-23' fails repeatedly.
+  azure_product: Azure Virtual Machines
+  persona: windows_admin
+  severity: Sev3
+  status: Active
+  created_at: '2026-05-24T10:00:00Z'
+  updated_at: '2026-05-24T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-3/providers/Microsoft.Compute/virtualMachines/guest-23
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-3/providers/Microsoft.Compute/virtualMachines/guest-23
+  resource_type: Microsoft.Compute/virtualMachines
+  name: guest-23
+  resource_group: rg-ops-3
+  subscription_id: 00000000-0000-0000-0000-000000000001
+  location: centralus
+  instances: []
+telemetry:
+  compute_guest_logs:
+  - time_generated: '2026-05-24T08:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-3/providers/Microsoft.Compute/virtualMachines/guest-23
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    instance_id: ''
+    computer: GUESTVM
+    channel: Application
+    provider_name: Application
+    event_id: 1000
+    level: Information
+    task: None
+    message: Routine informational event.
+  - time_generated: '2026-05-24T08:42:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-3/providers/Microsoft.Compute/virtualMachines/guest-23
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    instance_id: ''
+    computer: GUESTVM
+    channel: System
+    provider_name: Service Control Manager
+    event_id: 7031
+    level: Error
+    task: None
+    message: A service terminated unexpectedly.
+root_cause:
+  category: compute_guest
+  summary: An in-guest Windows fault is responsible; the Azure host is healthy.
+  resolution: Investigate the in-guest Windows event; this is not an Azure platform fault.
+investigation_path:
+- order: 1
+  tool: query_compute_guest_logs
+  params:
+    time_range: 2026-05-24T08:00:00Z/2026-05-24T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

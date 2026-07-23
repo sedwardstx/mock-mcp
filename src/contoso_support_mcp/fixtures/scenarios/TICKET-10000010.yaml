@@ -20,15 +20,41 @@ resources:
   subscription_id: 00000000-0000-0000-0000-000000000001
   location: westeurope
   instances: []
-telemetry: {}
+telemetry:
+  arm_control_plane_traces:
+  - time_generated: '2026-05-11T09:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data/providers/Microsoft.Compute/virtualMachines/sql-vm-03
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    resource_group: rg-data
+    correlation_id: corr-11-a
+    operation_name: Microsoft.Compute/virtualMachines/read
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 200
+    level: Informational
+    activity_status: Succeeded
+    sub_status: OK
+    properties: Routine read.
+  - time_generated: '2026-05-11T09:12:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data/providers/Microsoft.Compute/virtualMachines/sql-vm-03
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    resource_group: rg-data
+    correlation_id: corr-11-b
+    operation_name: Microsoft.Compute/virtualMachines/write
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 409
+    level: Error
+    activity_status: Failed
+    sub_status: OperationFailed
+    properties: Control-plane operation failed.
 root_cause:
   category: arm
-  summary: The resize control-plane operation fails due to a conflicting operation / SKU not available
-    on the current host cluster.
-  resolution: Stop (deallocate) the VM before resizing, or choose a SKU available in the region; retry.
+  summary: The resize control-plane operation fails due to a conflict / SKU unavailable.
+  resolution: Deallocate before resizing, or choose an available SKU; retry.
 investigation_path:
 - order: 1
   tool: query_arm_traces
   params:
-    time_range: 2026-05-11T09:00:00Z/2026-05-11T11:00:00Z
-  reveals: Control-plane operation failed with an error status in the ARM traces.
+    time_range: 2026-05-11T08:00:00Z/2026-05-11T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

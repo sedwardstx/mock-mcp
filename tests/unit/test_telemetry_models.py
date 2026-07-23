@@ -46,9 +46,16 @@ def test_loader_loads_typed_telemetry():
     assert any(r.action == "Deny" for r in net_scenario.telemetry.network_logs)
 
 
-def test_empty_telemetry_scenarios_still_load():
-    """3.1-UNIT-004: scenarios with `telemetry: {}` remain valid (backward-compat)."""
-    dataset = load_scenarios(DEFAULT_FIXTURES_PATH)
-    generated = dataset.get_by_ticket("TICKET-10000010")
-    assert generated is not None
-    assert generated.telemetry.arm_control_plane_traces == []
+def test_empty_telemetry_still_valid():
+    """3.1-UNIT-004: a scenario with `telemetry: {}` remains valid (backward-compat).
+
+    (As of Story 3.5 all shipped scenarios carry telemetry, so this asserts the
+    schema property directly rather than via a fixture.)
+    """
+    from contoso_support_mcp.data.models import Telemetry
+
+    empty = Telemetry.model_validate({})
+    assert empty.arm_control_plane_traces == []
+    assert empty.network_logs == []
+    assert empty.compute_host_logs == []
+    assert empty.compute_guest_logs == []

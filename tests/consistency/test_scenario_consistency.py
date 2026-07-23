@@ -16,9 +16,23 @@ def test_shipped_library_loads_and_is_consistent():
     assert check_dataset(dataset) == []
 
 
-def test_batch_size_in_range():
-    """2.5-UNIT-001: seed batch size is in the ~20-30 range."""
-    assert 20 <= len(_library()) <= 30
+def test_batch_size_grows():
+    """2.5/3.5: the library has grown to a substantial size (>=20; ~60 after 3.5)."""
+    assert len(_library()) >= 20
+
+
+def test_multi_round_scenarios_present_and_documented():
+    """3.5-UNIT-002/CON-002: >=3 multi_round scenarios, each with a >=2-step path."""
+    dataset = _library()
+    multi = [s for s in dataset.scenarios if str(s.difficulty) == "multi_round"]
+    assert len(multi) >= 3
+    assert all(len(s.investigation_path) >= 2 for s in multi)
+
+
+def test_every_scenario_has_root_cause_evidence():
+    """3.5-CON-001: whole-library telemetry-evidence consistency (redundant with
+    check_dataset but explicit)."""
+    assert check_dataset(_library()) == []
 
 
 def test_coverage_spread():
@@ -68,3 +82,44 @@ def test_validator_detects_broken_reference():
     """2.5-UNIT-003: the validator flags an unresolved ticket→resource reference."""
     issues = check_dataset(Dataset([_broken_scenario()]))
     assert any("not present in resources" in i for i in issues)
+
+
+def _scenario_without_evidence() -> Scenario:
+    """A well-formed scenario whose telemetry lacks root-cause evidence."""
+    return Scenario.model_validate(
+        {
+            "scenario_id": "TICKET-17777777",
+            "difficulty": "single_round",
+            "ticket": {
+                "ticket_id": "TICKET-17777777",
+                "title": "t",
+                "symptom": "s",
+                "azure_product": "Azure Networking",
+                "persona": "azure_developer",
+                "severity": "Sev3",
+                "status": "Active",
+                "created_at": "2026-01-01T00:00:00Z",
+                "updated_at": "2026-01-01T00:00:00Z",
+                "resource_ids": ["/subscriptions/z"],
+            },
+            "resources": [
+                {
+                    "resource_id": "/subscriptions/z",
+                    "resource_type": "Microsoft.Compute/virtualMachines",
+                    "name": "n",
+                    "resource_group": "rg",
+                    "subscription_id": "z",
+                    "location": "eastus",
+                }
+            ],
+            # network root cause, but no Deny evidence in telemetry:
+            "telemetry": {},
+            "root_cause": {"category": "network", "summary": "c", "resolution": "r"},
+        }
+    )
+
+
+def test_validator_detects_missing_root_cause_evidence():
+    """3.5-UNIT-001: the validator flags telemetry with no root-cause evidence."""
+    issues = check_dataset(Dataset([_scenario_without_evidence()]))
+    assert any("no evidence supporting root_cause" in i for i in issues)
