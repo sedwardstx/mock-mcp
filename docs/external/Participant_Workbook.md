@@ -148,7 +148,7 @@ applyTo: "**"
 - Only Tier 3 may recommend changes to production Azure resources.
 ```
 
-4.  Save the file. Re-run a similar question in a **new** chat and notice how the instructions shape the answer — it should now cite evidence and respect the PII and escalation rules automatically.
+4.  Save the file. Run /clear to start a new chat session, and pick up our changes. Re-run a similar question in the **new** chat and notice how the instructions shape the answer — it should now cite evidence and respect the PII and escalation rules automatically.
 
 5.  Commit the file so your team gets it: git add .github/copilot-instructions.md && git commit -m "Add team Copilot instructions"
 
