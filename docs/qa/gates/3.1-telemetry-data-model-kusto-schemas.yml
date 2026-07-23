@@ -1,0 +1,32 @@
+schema: 1
+story: "3.1"
+story_title: "Telemetry Data Model & Mock Kusto Table Schemas"
+gate: PASS
+status_reason: "Four typed Kusto row schemas + one shared deterministic query semantic, all covered by 8 passing unit tests; sample telemetry backfilled; backward-compat with empty telemetry preserved."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T20:00:00Z"
+
+top_issues: []
+waiver: { active: false }
+
+quality_score: 100
+expires: "2026-08-06T20:00:00Z"
+
+evidence:
+  tests_reviewed: 8
+  risks_identified: 4
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6]
+    ac_gaps: []
+
+nfr_validation:
+  security: { status: PASS, notes: "Typed validation on all telemetry; mocked data." }
+  performance: { status: PASS, notes: "In-memory filtering; trivial." }
+  reliability: { status: PASS, notes: "Fail-fast on malformed rows; deterministic query order; inclusive time bounds tested." }
+  maintainability: { status: PASS, notes: "Single query_rows semantic reused by all telemetry tools; schemas mirror architecture." }
+
+recommendations:
+  immediate: []
+  future:
+    - action: "Stories 3.2-3.4 wrap query_rows per table; 3.5 backfills all scenarios + extends consistency to telemetry evidence."
+      refs: ["src/contoso_support_mcp/data/query.py"]

@@ -1,0 +1,81 @@
+scenario_id: TICKET-10000044
+difficulty: multi_round
+ticket:
+  ticket_id: TICKET-10000044
+  title: Control-plane operation failing on deploy-44
+  symptom: Customer reports a management operation on 'deploy-44' fails immediately in the portal.
+  azure_product: Azure Virtual Machines
+  persona: azure_developer
+  severity: Sev4
+  status: Active
+  created_at: '2026-05-18T10:00:00Z'
+  updated_at: '2026-05-18T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachines/deploy-44
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachines/deploy-44
+  resource_type: Microsoft.Compute/virtualMachines
+  name: deploy-44
+  resource_group: rg-dev-4
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: eastus
+  instances: []
+telemetry:
+  arm_control_plane_traces:
+  - time_generated: '2026-05-18T09:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachines/deploy-44
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    resource_group: rg-dev-4
+    correlation_id: corr-18-a
+    operation_name: Microsoft.Compute/virtualMachines/read
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 200
+    level: Informational
+    activity_status: Succeeded
+    sub_status: OK
+    properties: Routine read.
+  - time_generated: '2026-05-18T09:12:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachines/deploy-44
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    resource_group: rg-dev-4
+    correlation_id: corr-18-b
+    operation_name: Microsoft.Compute/virtualMachines/write
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 409
+    level: Error
+    activity_status: Failed
+    sub_status: OperationFailed
+    properties: Control-plane operation failed.
+  network_logs:
+  - time_generated: '2026-05-18T14:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-4/providers/Microsoft.Compute/virtualMachines/deploy-44
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.1.10
+    source_port: 51544
+    destination_port: 443
+    protocol: TCP
+    action: Allow
+    nsg_rule_name: AllowHttpsOutbound
+    bytes_sent: 4096
+    bytes_received: 8192
+    packets_sent: 12
+    packets_received: 14
+root_cause:
+  category: arm
+  summary: The ARM control-plane operation fails (error status) for the resource.
+  resolution: Inspect the failed operation in ARM traces; correct the request and retry.
+investigation_path:
+- order: 1
+  tool: query_network_logs
+  params:
+    time_range: 2026-05-18T08:00:00Z/2026-05-18T15:00:00Z
+  reveals: "Only benign rows here \u2014 inconclusive; form a new hypothesis."
+- order: 2
+  tool: query_arm_traces
+  params:
+    time_range: 2026-05-18T08:00:00Z/2026-05-18T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

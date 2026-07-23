@@ -1,0 +1,32 @@
+schema: 1
+story: "2.5"
+story_title: "Seed Scenario Batch & Consistency Validation"
+gate: PASS
+status_reason: "20 internally-consistent scenarios spanning both personas and all 4 root-cause categories; whole-library consistency validator green (with a proven negative case); tools verified across the batch."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T19:00:00Z"
+
+top_issues: []
+waiver: { active: false }
+
+quality_score: 100
+expires: "2026-08-06T19:00:00Z"
+
+evidence:
+  tests_reviewed: 6
+  risks_identified: 4
+  trace:
+    ac_covered: [1, 2, 3, 4, 5]
+    ac_gaps: []
+
+nfr_validation:
+  security: { status: PASS, notes: "All data mocked; strict schema validation on load." }
+  performance: { status: PASS, notes: "20 scenarios load and query instantly." }
+  reliability: { status: PASS, notes: "Consistency validator guards ticket↔resource integrity; runs in CI/test." }
+  maintainability: { status: PASS, notes: "Curated authoring script + committed YAML as source of truth; earlier tests generalized to avoid brittleness." }
+
+recommendations:
+  immediate: []
+  future:
+    - action: "Epic 3 backfills telemetry and extends consistency to telemetry-vs-root-cause evidence."
+      refs: ["src/contoso_support_mcp/data/consistency.py"]

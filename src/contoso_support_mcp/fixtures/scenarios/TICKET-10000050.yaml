@@ -1,0 +1,71 @@
+scenario_id: TICKET-10000050
+difficulty: multi_round
+ticket:
+  ticket_id: TICKET-10000050
+  title: Unexpected platform event on host-50
+  symptom: Customer reports 'host-50' had an unexpected interruption with no user action.
+  azure_product: Azure Virtual Machines
+  persona: azure_developer
+  severity: Sev2
+  status: Active
+  created_at: '2026-05-24T10:00:00Z'
+  updated_at: '2026-05-24T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-0/providers/Microsoft.Compute/virtualMachines/host-50
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-0/providers/Microsoft.Compute/virtualMachines/host-50
+  resource_type: Microsoft.Compute/virtualMachines
+  name: host-50
+  resource_group: rg-dev-0
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: westeurope
+  instances: []
+telemetry:
+  compute_host_logs:
+  - time_generated: '2026-05-24T10:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-0/providers/Microsoft.Compute/virtualMachines/host-50
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    instance_id: ''
+    host_node: HN-EASTUS-4471
+    event_name: HealthCheck
+    health_status: Healthy
+    maintenance_type: None
+    level: Informational
+    message: Routine health check passed.
+  - time_generated: '2026-05-24T10:07:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-0/providers/Microsoft.Compute/virtualMachines/host-50
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    instance_id: ''
+    host_node: HN-EASTUS-9920
+    event_name: HostDegraded
+    health_status: Degraded
+    maintenance_type: Unplanned
+    level: Error
+    message: Host node reported a degraded state.
+  compute_guest_logs:
+  - time_generated: '2026-05-24T08:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-0/providers/Microsoft.Compute/virtualMachines/host-50
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    instance_id: ''
+    computer: GUESTVM
+    channel: Application
+    provider_name: Application
+    event_id: 1000
+    level: Information
+    task: None
+    message: Routine informational event.
+root_cause:
+  category: compute_host
+  summary: A platform host event affected the resource.
+  resolution: Confirm the host event in host logs; use availability zones for resilience.
+investigation_path:
+- order: 1
+  tool: query_compute_guest_logs
+  params:
+    time_range: 2026-05-24T08:00:00Z/2026-05-24T15:00:00Z
+  reveals: "Only benign rows here \u2014 inconclusive; form a new hypothesis."
+- order: 2
+  tool: query_compute_host_logs
+  params:
+    time_range: 2026-05-24T08:00:00Z/2026-05-24T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

@@ -1,0 +1,66 @@
+scenario_id: TICKET-10000001
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000001
+  title: "VM will not start — allocation failure"
+  symptom: >-
+    Customer reports VM 'prod-web-01' fails to start. The Azure portal shows an
+    allocation failure when attempting to start the virtual machine.
+  azure_product: "Azure Virtual Machines"
+  persona: windows_admin
+  severity: Sev2
+  status: Active
+  created_at: "2026-05-14T09:12:00Z"
+  updated_at: "2026-05-14T09:40:00Z"
+  resource_ids:
+    - "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-prod/providers/Microsoft.Compute/virtualMachines/prod-web-01"
+resources:
+  - resource_id: "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-prod/providers/Microsoft.Compute/virtualMachines/prod-web-01"
+    resource_type: "Microsoft.Compute/virtualMachines"
+    name: "prod-web-01"
+    resource_group: "rg-prod"
+    subscription_id: "00000000-0000-0000-0000-000000000001"
+    location: "eastus"
+    instances: []
+telemetry:
+  arm_control_plane_traces:
+    - time_generated: "2026-05-14T09:05:12Z"
+      resource_id: "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-prod/providers/Microsoft.Compute/virtualMachines/prod-web-01"
+      subscription_id: "00000000-0000-0000-0000-000000000001"
+      resource_group: "rg-prod"
+      correlation_id: "a1b2c3d4-0001"
+      operation_name: "Microsoft.Compute/virtualMachines/read"
+      caller: "admin@contoso.com"
+      client_ip: "13.68.10.20"
+      http_status_code: 200
+      level: "Informational"
+      activity_status: "Succeeded"
+      sub_status: "OK"
+      properties: "Routine read of VM properties."
+    - time_generated: "2026-05-14T09:12:03Z"
+      resource_id: "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-prod/providers/Microsoft.Compute/virtualMachines/prod-web-01"
+      subscription_id: "00000000-0000-0000-0000-000000000001"
+      resource_group: "rg-prod"
+      correlation_id: "a1b2c3d4-0002"
+      operation_name: "Microsoft.Compute/virtualMachines/start/action"
+      caller: "admin@contoso.com"
+      client_ip: "13.68.10.20"
+      http_status_code: 409
+      level: "Error"
+      activity_status: "Failed"
+      sub_status: "AllocationFailed"
+      properties: "Allocation failed. SKU Standard_D4s_v5 not available in zone 1."
+root_cause:
+  category: arm
+  summary: >-
+    Capacity/allocation failure for the requested VM SKU (Standard_D4s_v5) in
+    the target availability zone.
+  resolution: >-
+    Retry the start in a different availability zone, or resize the VM to an
+    available SKU. If persistent, request additional capacity for the region/zone.
+investigation_path:
+  - order: 1
+    tool: query_arm_traces
+    params:
+      time_range: "2026-05-14T09:00:00Z/2026-05-14T10:00:00Z"
+    reveals: "409 AllocationFailed on the VM start/write operation."

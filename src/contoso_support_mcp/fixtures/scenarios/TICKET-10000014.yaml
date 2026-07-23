@@ -1,0 +1,60 @@
+scenario_id: TICKET-10000014
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000014
+  title: Deployment update denied by policy
+  symptom: Admin's update to 'policy-vm-01' is rejected immediately with a deny error.
+  azure_product: Azure Virtual Machines
+  persona: windows_admin
+  severity: Sev4
+  status: Active
+  created_at: '2026-05-15T10:00:00Z'
+  updated_at: '2026-05-15T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-gov/providers/Microsoft.Compute/virtualMachines/policy-vm-01
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-gov/providers/Microsoft.Compute/virtualMachines/policy-vm-01
+  resource_type: Microsoft.Compute/virtualMachines
+  name: policy-vm-01
+  resource_group: rg-gov
+  subscription_id: 00000000-0000-0000-0000-000000000001
+  location: westeurope
+  instances: []
+telemetry:
+  arm_control_plane_traces:
+  - time_generated: '2026-05-15T09:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-gov/providers/Microsoft.Compute/virtualMachines/policy-vm-01
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    resource_group: rg-gov
+    correlation_id: corr-15-a
+    operation_name: Microsoft.Compute/virtualMachines/read
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 200
+    level: Informational
+    activity_status: Succeeded
+    sub_status: OK
+    properties: Routine read.
+  - time_generated: '2026-05-15T09:12:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-gov/providers/Microsoft.Compute/virtualMachines/policy-vm-01
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    resource_group: rg-gov
+    correlation_id: corr-15-b
+    operation_name: Microsoft.Compute/virtualMachines/write
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 409
+    level: Error
+    activity_status: Failed
+    sub_status: OperationFailed
+    properties: Control-plane operation failed.
+root_cause:
+  category: arm
+  summary: An Azure Policy assignment denies the requested change.
+  resolution: Adjust the resource to comply, or update the policy assignment/exemption.
+investigation_path:
+- order: 1
+  tool: query_arm_traces
+  params:
+    time_range: 2026-05-15T08:00:00Z/2026-05-15T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

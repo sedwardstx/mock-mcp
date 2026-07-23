@@ -1,0 +1,40 @@
+schema: 1
+story: "2.2"
+story_title: "Ticket Retrieval Tools (List & Get)"
+gate: PASS
+status_reason: "All 5 ACs covered by 8 passing tests; structured not_found/invalid_request paths verified (no raises); list bounded and deterministic."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T16:00:00Z"
+
+top_issues: []
+waiver: { active: false }
+
+quality_score: 100
+expires: "2026-08-06T16:00:00Z"
+
+evidence:
+  tests_reviewed: 8
+  risks_identified: 3
+  trace:
+    ac_covered: [1, 2, 3, 4, 5]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: "Ticket id validated before lookup; no external input."
+  performance:
+    status: PASS
+    notes: "In-memory list/get; list bounded (limit clamped to 200)."
+  reliability:
+    status: PASS
+    notes: "Tools return structured results for ok/not_found/invalid_request; never raise."
+  maintainability:
+    status: PASS
+    notes: "Thin tools over a pure Repository; response models are explicit and self-documenting."
+
+recommendations:
+  immediate: []
+  future:
+    - action: "Search/resource/telemetry methods extend the same Repository in later stories."
+      refs: ["src/contoso_support_mcp/data/repository.py"]

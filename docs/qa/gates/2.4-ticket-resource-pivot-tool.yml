@@ -1,0 +1,32 @@
+schema: 1
+story: "2.4"
+story_title: "Ticket → Resource Pivot Tool"
+gate: PASS
+status_reason: "All 5 ACs covered by 6 passing tests; resource_id returned unchanged for Epic 3 scoping (verified), VMSS instances surfaced, and error paths structured."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T18:00:00Z"
+
+top_issues: []
+waiver: { active: false }
+
+quality_score: 100
+expires: "2026-08-06T18:00:00Z"
+
+evidence:
+  tests_reviewed: 6
+  risks_identified: 3
+  trace:
+    ac_covered: [1, 2, 3, 4, 5]
+    ac_gaps: []
+
+nfr_validation:
+  security: { status: PASS, notes: "Id validated; no external input." }
+  performance: { status: PASS, notes: "O(1) ticket lookup via index." }
+  reliability: { status: PASS, notes: "not_found vs empty vs invalid distinct; never raises." }
+  maintainability: { status: PASS, notes: "Separate resources tool module; consistent result contract." }
+
+recommendations:
+  immediate: []
+  future:
+    - action: "Re-verify resource_id ↔ telemetry scoping consistency when Epic 3 tools land."
+      refs: ["src/contoso_support_mcp/tools/resources.py"]

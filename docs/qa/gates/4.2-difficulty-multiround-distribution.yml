@@ -1,0 +1,21 @@
+schema: 1
+story: "4.2"
+story_title: "Difficulty Tagging & Multi-Round Distribution"
+gate: PASS
+status_reason: "Multi-round at 26% (>=25% enforced by an automated test); difficulty documented and exposed via a coverage cross-tab; multi-round paths verified."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T23:40:00Z"
+top_issues: []
+waiver: { active: false }
+quality_score: 100
+expires: "2026-08-06T23:40:00Z"
+evidence:
+  tests_reviewed: 3
+  risks_identified: 2
+  trace: { ac_covered: [1, 2, 3, 4, 5], ac_gaps: [] }
+nfr_validation:
+  security: { status: PASS, notes: "N/A — data distribution story." }
+  performance: { status: PASS, notes: "No runtime impact." }
+  reliability: { status: PASS, notes: ">=25% multi-round is CI-gated." }
+  maintainability: { status: PASS, notes: "Deterministic selection; coverage report documents distribution." }
+recommendations: { immediate: [], future: [] }

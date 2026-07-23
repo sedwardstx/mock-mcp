@@ -1,0 +1,64 @@
+scenario_id: TICKET-10000009
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000009
+  title: Intermittent 503s behind the load balancer
+  symptom: Developer reports intermittent HTTP 503 responses from a load-balanced app.
+  azure_product: Azure Networking
+  persona: azure_developer
+  severity: Sev4
+  status: Active
+  created_at: '2026-05-10T10:00:00Z'
+  updated_at: '2026-05-10T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net/providers/Microsoft.Compute/virtualMachines/lb-app-vm-01
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net/providers/Microsoft.Compute/virtualMachines/lb-app-vm-01
+  resource_type: Microsoft.Compute/virtualMachines
+  name: lb-app-vm-01
+  resource_group: rg-net
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: westus2
+  instances: []
+telemetry:
+  network_logs:
+  - time_generated: '2026-05-10T14:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net/providers/Microsoft.Compute/virtualMachines/lb-app-vm-01
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.1.10
+    source_port: 51544
+    destination_port: 443
+    protocol: TCP
+    action: Allow
+    nsg_rule_name: AllowHttpsOutbound
+    bytes_sent: 4096
+    bytes_received: 8192
+    packets_sent: 12
+    packets_received: 14
+  - time_generated: '2026-05-10T14:33:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net/providers/Microsoft.Compute/virtualMachines/lb-app-vm-01
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.2.20
+    source_port: 51602
+    destination_port: 1433
+    protocol: TCP
+    action: Deny
+    nsg_rule_name: DenyOutbound
+    bytes_sent: 0
+    bytes_received: 0
+    packets_sent: 3
+    packets_received: 0
+root_cause:
+  category: network
+  summary: An NSG rule blocks the load balancer health-probe port, marking the backend unhealthy.
+  resolution: Allow the load balancer probe port in the NSG (AzureLoadBalancer service tag).
+investigation_path:
+- order: 1
+  tool: query_network_logs
+  params:
+    time_range: 2026-05-10T08:00:00Z/2026-05-10T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

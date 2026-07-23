@@ -1,0 +1,62 @@
+scenario_id: TICKET-10000005
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000005
+  title: Scale-out fails to add instances
+  symptom: Developer reports 'web-vmss' will not scale out; new instances never appear.
+  azure_product: Azure Virtual Machine Scale Sets
+  persona: azure_developer
+  severity: Sev2
+  status: Active
+  created_at: '2026-05-06T10:00:00Z'
+  updated_at: '2026-05-06T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-web/providers/Microsoft.Compute/virtualMachineScaleSets/web-vmss
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-web/providers/Microsoft.Compute/virtualMachineScaleSets/web-vmss
+  resource_type: Microsoft.Compute/virtualMachineScaleSets
+  name: web-vmss
+  resource_group: rg-web
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: westus2
+  instances:
+  - web-vmss_0
+  - web-vmss_1
+telemetry:
+  arm_control_plane_traces:
+  - time_generated: '2026-05-06T09:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-web/providers/Microsoft.Compute/virtualMachineScaleSets/web-vmss
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    resource_group: rg-web
+    correlation_id: corr-6-a
+    operation_name: Microsoft.Compute/virtualMachines/read
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 200
+    level: Informational
+    activity_status: Succeeded
+    sub_status: OK
+    properties: Routine read.
+  - time_generated: '2026-05-06T09:12:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-web/providers/Microsoft.Compute/virtualMachineScaleSets/web-vmss
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    resource_group: rg-web
+    correlation_id: corr-6-b
+    operation_name: Microsoft.Compute/virtualMachines/write
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 409
+    level: Error
+    activity_status: Failed
+    sub_status: OperationFailed
+    properties: Control-plane operation failed.
+root_cause:
+  category: arm
+  summary: The scale operation fails with an allocation/quota error for the SKU in the region.
+  resolution: Request a quota increase or choose an available SKU/region; retry.
+investigation_path:
+- order: 1
+  tool: query_arm_traces
+  params:
+    time_range: 2026-05-06T08:00:00Z/2026-05-06T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.

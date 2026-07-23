@@ -1,0 +1,83 @@
+scenario_id: TICKET-10000077
+difficulty: multi_round
+ticket:
+  ticket_id: TICKET-10000077
+  title: Connectivity blocked to/from net-77
+  symptom: Customer reports 'net-77' cannot reach a required endpoint after a network change.
+  azure_product: Azure Networking
+  persona: windows_admin
+  severity: Sev2
+  status: Active
+  created_at: '2026-05-24T10:00:00Z'
+  updated_at: '2026-05-24T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-2/providers/Microsoft.Compute/virtualMachines/net-77
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-2/providers/Microsoft.Compute/virtualMachines/net-77
+  resource_type: Microsoft.Compute/virtualMachines
+  name: net-77
+  resource_group: rg-ops-2
+  subscription_id: 00000000-0000-0000-0000-000000000001
+  location: westus2
+  instances: []
+telemetry:
+  network_logs:
+  - time_generated: '2026-05-24T14:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-2/providers/Microsoft.Compute/virtualMachines/net-77
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.1.10
+    source_port: 51544
+    destination_port: 443
+    protocol: TCP
+    action: Allow
+    nsg_rule_name: AllowHttpsOutbound
+    bytes_sent: 4096
+    bytes_received: 8192
+    packets_sent: 12
+    packets_received: 14
+  - time_generated: '2026-05-24T14:33:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-2/providers/Microsoft.Compute/virtualMachines/net-77
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.2.20
+    source_port: 51602
+    destination_port: 1433
+    protocol: TCP
+    action: Deny
+    nsg_rule_name: DenyOutbound
+    bytes_sent: 0
+    bytes_received: 0
+    packets_sent: 3
+    packets_received: 0
+  arm_control_plane_traces:
+  - time_generated: '2026-05-24T09:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-2/providers/Microsoft.Compute/virtualMachines/net-77
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    resource_group: rg-ops-2
+    correlation_id: corr-24-a
+    operation_name: Microsoft.Compute/virtualMachines/read
+    caller: user@contoso.com
+    client_ip: 13.68.0.1
+    http_status_code: 200
+    level: Informational
+    activity_status: Succeeded
+    sub_status: OK
+    properties: Routine read.
+root_cause:
+  category: network
+  summary: An NSG rule denies the required traffic for the resource.
+  resolution: Amend the NSG rule to allow the required flow.
+investigation_path:
+- order: 1
+  tool: query_arm_traces
+  params:
+    time_range: 2026-05-24T08:00:00Z/2026-05-24T15:00:00Z
+  reveals: "Only benign rows here \u2014 inconclusive; form a new hypothesis."
+- order: 2
+  tool: query_network_logs
+  params:
+    time_range: 2026-05-24T08:00:00Z/2026-05-24T15:00:00Z
+  reveals: The evidence supporting the root cause appears in this table.
