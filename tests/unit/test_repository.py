@@ -53,3 +53,14 @@ def test_search_deterministic_order():
     tickets, _ = _repo().search_tickets(persona="windows_admin")
     ids = [t.ticket_id for t in tickets]
     assert ids == sorted(ids)
+
+
+def test_get_resources_known_ticket():
+    resources = _repo().get_resources("TICKET-10000001")
+    assert resources is not None
+    assert len(resources) == 1
+    assert resources[0].resource_type == "Microsoft.Compute/virtualMachines"
+
+
+def test_get_resources_unknown_ticket_returns_none():
+    assert _repo().get_resources("TICKET-00000000") is None

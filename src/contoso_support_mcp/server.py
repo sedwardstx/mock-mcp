@@ -12,6 +12,7 @@ from .config import DEFAULT_FIXTURES_PATH
 from .data.loader import load_scenarios
 from .data.repository import Repository
 from .tools.health import register_health_tools
+from .tools.resources import register_resource_tools
 from .tools.tickets import register_ticket_tools
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ def build_server(
 
     register_health_tools(mcp)
     register_ticket_tools(mcp, repo)
+    register_resource_tools(mcp, repo)
 
     logger.info("Registered tool surface for %s (%d scenarios)", SERVER_NAME, len(dataset))
     return mcp
