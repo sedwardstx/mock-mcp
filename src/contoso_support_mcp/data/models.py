@@ -100,17 +100,93 @@ class InvestigationStep(BaseModel):
     reveals: str
 
 
-class Telemetry(BaseModel):
-    """Correlated Kusto-style telemetry. Rows stay free-form dicts until Epic 3
-    introduces typed row models; the container exists now so scenarios are
-    forward-compatible without a schema change."""
+class ArmTraceRow(BaseModel):
+    """A row in the mock ArmControlPlaneTraces table (Azure Activity Log style)."""
 
     model_config = _STRICT
 
-    arm_control_plane_traces: list[dict] = Field(default_factory=list)
-    network_logs: list[dict] = Field(default_factory=list)
-    compute_host_logs: list[dict] = Field(default_factory=list)
-    compute_guest_logs: list[dict] = Field(default_factory=list)
+    time_generated: datetime
+    resource_id: str
+    subscription_id: str = ""
+    resource_group: str = ""
+    correlation_id: str = ""
+    operation_name: str = ""
+    caller: str = ""
+    client_ip: str = ""
+    http_status_code: int = 0
+    level: str = "Informational"
+    activity_status: str = ""
+    sub_status: str = ""
+    properties: str = ""
+
+
+class NetworkLogRow(BaseModel):
+    """A row in the mock NetworkLogs table (NSG flow log style)."""
+
+    model_config = _STRICT
+
+    time_generated: datetime
+    resource_id: str
+    subscription_id: str = ""
+    flow_direction: str = ""
+    source_ip: str = ""
+    destination_ip: str = ""
+    source_port: int = 0
+    destination_port: int = 0
+    protocol: str = ""
+    action: str = ""
+    nsg_rule_name: str = ""
+    bytes_sent: int = 0
+    bytes_received: int = 0
+    packets_sent: int = 0
+    packets_received: int = 0
+
+
+class ComputeHostLogRow(BaseModel):
+    """A row in the mock ComputeHostLogs table (platform/host events, VM & VMSS)."""
+
+    model_config = _STRICT
+
+    time_generated: datetime
+    resource_id: str
+    subscription_id: str = ""
+    instance_id: str = ""  # VMSS instance; empty for a plain VM
+    host_node: str = ""
+    event_name: str = ""
+    health_status: str = ""
+    maintenance_type: str = "None"
+    level: str = "Informational"
+    message: str = ""
+
+
+class ComputeGuestLogRow(BaseModel):
+    """A row in the mock ComputeGuestLogs table (in-guest Windows events, VM & VMSS)."""
+
+    model_config = _STRICT
+
+    time_generated: datetime
+    resource_id: str
+    subscription_id: str = ""
+    instance_id: str = ""  # VMSS instance; empty for a plain VM
+    computer: str = ""
+    channel: str = "System"
+    provider_name: str = ""
+    event_id: int = 0
+    level: str = "Information"
+    task: str = ""
+    message: str = ""
+
+
+class Telemetry(BaseModel):
+    """Correlated Kusto-style telemetry across the four mock tables. Rows are
+    typed (Story 3.1); all lists default empty so `telemetry: {}` stays valid."""
+
+    model_config = _STRICT
+
+    arm_control_plane_traces: list[ArmTraceRow] = Field(default_factory=list)
+    network_logs: list[NetworkLogRow] = Field(default_factory=list)
+    compute_host_logs: list[ComputeHostLogRow] = Field(default_factory=list)
+    compute_guest_logs: list[ComputeGuestLogRow] = Field(default_factory=list)
 
 
 class Scenario(BaseModel):

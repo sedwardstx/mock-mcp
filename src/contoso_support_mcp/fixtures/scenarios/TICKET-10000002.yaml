@@ -25,7 +25,38 @@ resources:
     instances:
       - "api-vmss_0"
       - "api-vmss_1"
-telemetry: {}
+telemetry:
+  network_logs:
+    - time_generated: "2026-06-02T14:31:00Z"
+      resource_id: "/subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-api/providers/Microsoft.Compute/virtualMachineScaleSets/api-vmss"
+      subscription_id: "00000000-0000-0000-0000-000000000002"
+      flow_direction: "Outbound"
+      source_ip: "10.2.0.4"
+      destination_ip: "10.9.0.10"
+      source_port: 51544
+      destination_port: 443
+      protocol: "TCP"
+      action: "Allow"
+      nsg_rule_name: "AllowHttpsOutbound"
+      bytes_sent: 4096
+      bytes_received: 8192
+      packets_sent: 12
+      packets_received: 14
+    - time_generated: "2026-06-02T14:33:20Z"
+      resource_id: "/subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-api/providers/Microsoft.Compute/virtualMachineScaleSets/api-vmss"
+      subscription_id: "00000000-0000-0000-0000-000000000002"
+      flow_direction: "Outbound"
+      source_ip: "10.2.0.4"
+      destination_ip: "10.9.0.20"
+      source_port: 51602
+      destination_port: 1433
+      protocol: "TCP"
+      action: "Deny"
+      nsg_rule_name: "DenyDbOutbound"
+      bytes_sent: 0
+      bytes_received: 0
+      packets_sent: 3
+      packets_received: 0
 root_cause:
   category: network
   summary: >-
