@@ -1,5 +1,5 @@
 scenario_id: TICKET-10000035
-difficulty: single_round
+difficulty: multi_round
 ticket:
   ticket_id: TICKET-10000035
   title: In-guest Windows fault on guest-35
@@ -44,12 +44,28 @@ telemetry:
     level: Error
     task: None
     message: A service terminated unexpectedly.
+  compute_host_logs:
+  - time_generated: '2026-05-09T10:05:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-ops-0/providers/Microsoft.Compute/virtualMachines/guest-35
+    subscription_id: 00000000-0000-0000-0000-000000000001
+    instance_id: ''
+    host_node: HN-EASTUS-4471
+    event_name: HealthCheck
+    health_status: Healthy
+    maintenance_type: None
+    level: Informational
+    message: Routine health check passed.
 root_cause:
   category: compute_guest
   summary: An in-guest Windows fault is responsible; the Azure host is healthy.
   resolution: Investigate the in-guest Windows event; this is not an Azure platform fault.
 investigation_path:
 - order: 1
+  tool: query_compute_host_logs
+  params:
+    time_range: 2026-05-09T08:00:00Z/2026-05-09T15:00:00Z
+  reveals: "Only benign rows here \u2014 inconclusive; form a new hypothesis."
+- order: 2
   tool: query_compute_guest_logs
   params:
     time_range: 2026-05-09T08:00:00Z/2026-05-09T15:00:00Z

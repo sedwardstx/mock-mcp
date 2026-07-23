@@ -48,8 +48,27 @@ def build_report() -> str:
         _table("Azure Product", product),
         _table("Root-Cause Category", category),
         _table("Difficulty", difficulty),
+        _cross_tab(dataset),
     ]
     return "\n".join(parts)
+
+
+def _cross_tab(dataset) -> str:
+    categories = sorted({str(s.root_cause.category) for s in dataset.scenarios})
+    counts: dict[tuple[str, str], int] = {}
+    for s in dataset.scenarios:
+        key = (str(s.difficulty), str(s.root_cause.category))
+        counts[key] = counts.get(key, 0) + 1
+    header = "| Difficulty \\ Category | " + " | ".join(categories) + " |"
+    sep = "|" + "---|" * (len(categories) + 1)
+    lines = ["### Difficulty × Root-Cause Category", "", header, sep]
+    for difficulty in ("single_round", "multi_round"):
+        row = [f"| {difficulty} "]
+        for cat in categories:
+            row.append(f"| {counts.get((difficulty, cat), 0)} ")
+        lines.append("".join(row) + "|")
+    lines.append("")
+    return "\n".join(lines)
 
 
 def main() -> None:

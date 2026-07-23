@@ -173,9 +173,12 @@ CAT_TEXT = {
     },
 }
 
-# Multi-round scenarios (templated range). True category is the entry's category;
-# the "obvious" table is benign, real evidence in the category table.
-MULTI_ROUND_NUMS = {26, 32, 38, 44, 50, 56, 60}
+# Multi-round selection (templated range): a scenario is multi-round when
+# `num % 3 == 2`, giving ~26% of the library. Chosen so TICKET-10000026 stays
+# multi-round (used by the multi-round e2e test). True category is the entry's
+# category; the "obvious" table is benign, real evidence in the category table.
+def _is_multi_round(num: int) -> bool:
+    return num % 3 == 2
 
 SEVERITY_CYCLE = ["Sev2", "Sev3", "Sev2", "Sev3", "Sev4"]
 
@@ -340,7 +343,7 @@ def _specs():
         name = f"{CAT_PREFIX[category]}-{num:02d}"
         rg = f"rg-{'ops' if persona == 'windows_admin' else 'dev'}-{num % 5}"
         product = "Azure Virtual Machine Scale Sets" if rtype == "vmss" else text["product"]
-        multi = num in MULTI_ROUND_NUMS
+        multi = _is_multi_round(num)
         yield (
             num, persona, product, rtype, category, name, rg,
             text["title"].format(name=name), text["symptom"].format(name=name),

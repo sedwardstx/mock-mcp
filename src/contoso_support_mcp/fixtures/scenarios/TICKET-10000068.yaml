@@ -1,5 +1,5 @@
 scenario_id: TICKET-10000068
-difficulty: single_round
+difficulty: multi_round
 ticket:
   ticket_id: TICKET-10000068
   title: Control-plane operation failing on deploy-68
@@ -48,12 +48,33 @@ telemetry:
     activity_status: Failed
     sub_status: OperationFailed
     properties: Control-plane operation failed.
+  network_logs:
+  - time_generated: '2026-05-15T14:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-3/providers/Microsoft.Compute/virtualMachines/deploy-68
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    flow_direction: Outbound
+    source_ip: 10.0.0.4
+    destination_ip: 10.0.1.10
+    source_port: 51544
+    destination_port: 443
+    protocol: TCP
+    action: Allow
+    nsg_rule_name: AllowHttpsOutbound
+    bytes_sent: 4096
+    bytes_received: 8192
+    packets_sent: 12
+    packets_received: 14
 root_cause:
   category: arm
   summary: The ARM control-plane operation fails (error status) for the resource.
   resolution: Inspect the failed operation in ARM traces; correct the request and retry.
 investigation_path:
 - order: 1
+  tool: query_network_logs
+  params:
+    time_range: 2026-05-15T08:00:00Z/2026-05-15T15:00:00Z
+  reveals: "Only benign rows here \u2014 inconclusive; form a new hypothesis."
+- order: 2
   tool: query_arm_traces
   params:
     time_range: 2026-05-15T08:00:00Z/2026-05-15T15:00:00Z

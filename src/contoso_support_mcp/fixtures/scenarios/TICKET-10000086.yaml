@@ -1,5 +1,5 @@
 scenario_id: TICKET-10000086
-difficulty: single_round
+difficulty: multi_round
 ticket:
   ticket_id: TICKET-10000086
   title: Unexpected platform event on host-86
@@ -42,12 +42,29 @@ telemetry:
     maintenance_type: Unplanned
     level: Error
     message: Host node reported a degraded state.
+  compute_guest_logs:
+  - time_generated: '2026-05-06T08:31:00Z'
+    resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-dev-1/providers/Microsoft.Compute/virtualMachines/host-86
+    subscription_id: 00000000-0000-0000-0000-000000000002
+    instance_id: ''
+    computer: GUESTVM
+    channel: Application
+    provider_name: Application
+    event_id: 1000
+    level: Information
+    task: None
+    message: Routine informational event.
 root_cause:
   category: compute_host
   summary: A platform host event affected the resource.
   resolution: Confirm the host event in host logs; use availability zones for resilience.
 investigation_path:
 - order: 1
+  tool: query_compute_guest_logs
+  params:
+    time_range: 2026-05-06T08:00:00Z/2026-05-06T15:00:00Z
+  reveals: "Only benign rows here \u2014 inconclusive; form a new hypothesis."
+- order: 2
   tool: query_compute_host_logs
   params:
     time_range: 2026-05-06T08:00:00Z/2026-05-06T15:00:00Z

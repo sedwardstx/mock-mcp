@@ -30,11 +30,18 @@ def test_library_reaches_100():
 
 
 def test_multi_round_scenarios_present_and_documented():
-    """3.5-UNIT-002/CON-002: >=3 multi_round scenarios, each with a >=2-step path."""
+    """3.5-UNIT-002/CON-002 + 4.2-UNIT-002: multi_round scenarios each have a >=2-step path."""
     dataset = _library()
     multi = [s for s in dataset.scenarios if str(s.difficulty) == "multi_round"]
     assert len(multi) >= 3
     assert all(len(s.investigation_path) >= 2 for s in multi)
+
+
+def test_multi_round_at_least_25_percent():
+    """4.2-UNIT-001: at least 25% of the library is multi_round."""
+    dataset = _library()
+    multi = sum(1 for s in dataset.scenarios if str(s.difficulty) == "multi_round")
+    assert multi / len(dataset) >= 0.25
 
 
 def test_every_scenario_has_root_cause_evidence():
