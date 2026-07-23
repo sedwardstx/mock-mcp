@@ -1,5 +1,8 @@
 # Instructor Guide — Contoso Support Ticketing MCP Server
 
+> Running the 2-day GitHub Copilot workshop? Pair this with the **[Facilitator Guide](facilitator-guide.md)** — per-lab talking points and worked demos with expected output. This guide covers the MCP-server hosting and RCA-grading specifics.
+
+
 This guide covers running the server for a class, choosing which scenarios to
 assign, and grading student root-cause analyses (RCAs). For the student-facing
 setup and walkthroughs, hand out the **[Student Handbook](student-handbook.md)**.

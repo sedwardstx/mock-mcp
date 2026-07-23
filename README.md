@@ -249,6 +249,10 @@ uv run ruff format   # format
 
 > 👩‍🏫 See the **[Instructor Guide](docs/instructor-guide.md)** for hosting the
 > server for a class, picking a scenario mix, designing labs, and grading RCAs.
+>
+> 🎤 Running the 2-day GitHub Copilot workshop? The **[Facilitator Guide](docs/facilitator-guide.md)**
+> is your run-the-room companion — talking points and a worked demo (with expected
+> output) for every module and lab.
 
 - **`docs/scenario-index.md`** — one row per scenario: ticket id, product, persona,
   difficulty, root-cause domain, title, the **expected root cause** (the grading
