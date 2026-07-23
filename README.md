@@ -102,6 +102,22 @@ uv run ruff check    # lint
 uv run ruff format   # format
 ```
 
+## For instructors — selecting scenarios & grading
+
+- **`docs/scenario-index.md`** — one row per scenario: ticket id, product, persona,
+  difficulty, root-cause domain, title, the **expected root cause** (the grading
+  answer), and the intended **investigation tool sequence**. Use it to map labs to
+  scenarios and to grade student RCAs.
+- **`docs/scenario-coverage.md`** — distribution by persona / product / category /
+  difficulty (incl. a difficulty × category cross-tab) so you can pick an
+  appropriate mix and spot gaps.
+- Regenerate both after editing scenarios:
+  `uv run python scripts/scenario_index.py` and
+  `uv run python scripts/coverage_report.py`.
+
+Every scenario is validated for consistency (ticket ↔ resource ↔ telemetry ↔
+root cause) and determinism in CI, so the data you grade against is trustworthy.
+
 ## Project Layout
 
 ```
