@@ -9,6 +9,27 @@ telemetry.
 All data is mocked and embedded — **no Azure subscription, credentials, or
 internet access is required at runtime.**
 
+## Quickstart
+
+```bash
+# 1. Install (once)
+uv sync
+
+# 2a. Student — local, offline (stdio)
+uv run contoso-support-mcp --transport stdio
+
+# 2b. Instructor — host for the class (network)
+uv run contoso-support-mcp --transport http --host 0.0.0.0 --port 8000
+```
+
+**Confirm the connection:** from your agent/client, call the `get_server_info`
+tool — a `status: "ok"` response means you're connected to the Contoso Support
+server. Total time from a clean machine to first successful call is a couple of
+minutes.
+
+Invalid configuration (e.g. `--port 70000` or an unknown `--transport`) prints a
+clear one-line error and exits — no stack trace.
+
 ## Requirements
 
 - Python **3.11+**

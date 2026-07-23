@@ -22,6 +22,17 @@ def _configure_logging() -> None:
     )
 
 
+def _port(value: str) -> int:
+    """Validate a TCP port, raising a clean CLI error (exit 2) if invalid."""
+    try:
+        port = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"port must be an integer, got {value!r}") from None
+    if not (1 <= port <= 65535):
+        raise argparse.ArgumentTypeError(f"port must be in range 1-65535, got {port}")
+    return port
+
+
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="contoso-support-mcp",
@@ -40,9 +51,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--port",
-        type=int,
+        type=_port,
         default=8000,
-        help="Bind port for http transport (default: 8000).",
+        help="Bind port for http transport (default: 8000; valid 1-65535).",
     )
     return parser
 
