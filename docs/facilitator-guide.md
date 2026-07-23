@@ -71,7 +71,7 @@ models visible.
 ## Module 1 — The Agent Landscape (45 min)
 
 **Say:** agent vs autocomplete vs chat; the agentic loop (plan → act → observe →
-repeat) with approval prompts; **Ask / Edit / Agent** modes; the five layers
+repeat) with approval prompts; **Ask / Plan / Agent** modes; the five layers
 (one diagram). Why it matters for support: turn runbooks + tribal knowledge into
 shareable, consistent agents.
 
