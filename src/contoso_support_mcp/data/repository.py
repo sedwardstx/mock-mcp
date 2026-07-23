@@ -26,6 +26,14 @@ class Repository:
         scenario = self._dataset.get_by_ticket(ticket_id)
         return list(scenario.resources) if scenario is not None else None
 
+    def get_resource(self, resource_id: str) -> AzureResource | None:
+        """Look up a single Azure resource by its ARM id across all scenarios."""
+        for scenario in self._dataset.scenarios:
+            for resource in scenario.resources:
+                if resource.resource_id == resource_id:
+                    return resource
+        return None
+
     def list_tickets(self, offset: int = 0, limit: int = 50) -> tuple[list[Ticket], int]:
         """Return a page of tickets (in deterministic Dataset order) and the total count."""
         tickets = [s.ticket for s in self._dataset.scenarios]

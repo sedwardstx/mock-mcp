@@ -17,6 +17,14 @@ VMSS_RID = (
     "/subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-api"
     "/providers/Microsoft.Compute/virtualMachineScaleSets/api-vmss"
 )
+GUEST_VM_RID = (
+    "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data"
+    "/providers/Microsoft.Compute/virtualMachines/sql-node-01"
+)
+HOST_VMSS_RID = (
+    "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data"
+    "/providers/Microsoft.Compute/virtualMachineScaleSets/data-vmss"
+)
 
 
 async def test_arm_traces_returns_allocation_failure_evidence():
@@ -105,3 +113,69 @@ async def test_network_logs_bad_time_range_invalid():
             "query_network_logs", {"resource_id": VMSS_RID, "time_range": "nope"}
         )
         assert result.structuredContent["status"] == "invalid_request"
+
+
+async def test_guest_logs_windows_event_evidence():
+    """3.4-INT-001: guest query on a VM surfaces Windows event 7031 (Windows-only)."""
+    async with client_session(build_server()) as client:
+        result = await client.call_tool("query_compute_guest_logs", {"resource_id": GUEST_VM_RID})
+        sc = result.structuredContent
+        assert sc["status"] == "ok"
+        assert any(r["event_id"] == 7031 for r in sc["rows"])
+        assert any(r["provider_name"] == "Service Control Manager" for r in sc["rows"])
+
+
+async def test_host_logs_vmss_instance_scoping():
+    """3.4-INT-002: host query for a specific VMSS instance returns only that instance's rows."""
+    async with client_session(build_server()) as client:
+        result = await client.call_tool(
+            "query_compute_host_logs",
+            {"resource_id": HOST_VMSS_RID, "instance_id": "data-vmss_0"},
+        )
+        sc = result.structuredContent
+        assert sc["status"] == "ok"
+        assert sc["count"] == 1
+        assert sc["rows"][0]["instance_id"] == "data-vmss_0"
+        assert sc["rows"][0]["health_status"] == "Degraded"
+
+
+async def test_host_logs_unknown_instance_invalid():
+    """3.4-INT-003: an instance not on the VMSS → invalid_request with allowed instances."""
+    async with client_session(build_server()) as client:
+        result = await client.call_tool(
+            "query_compute_host_logs",
+            {"resource_id": HOST_VMSS_RID, "instance_id": "data-vmss_99"},
+        )
+        sc = result.structuredContent
+        assert sc["status"] == "invalid_request"
+        assert "data-vmss_0" in sc["message"]
+
+
+async def test_compute_unrelated_resource_empty():
+    """3.4-INT-004: unrelated resource → ok empty for both host and guest."""
+    async with client_session(build_server()) as client:
+        host = await client.call_tool(
+            "query_compute_host_logs", {"resource_id": "/subscriptions/none/vmss/x"}
+        )
+        guest = await client.call_tool(
+            "query_compute_guest_logs", {"resource_id": "/subscriptions/none/vm/x"}
+        )
+        assert host.structuredContent["rows"] == []
+        assert guest.structuredContent["rows"] == []
+
+
+async def test_host_logs_all_instances_when_none_specified():
+    """3.4-INT-005: without instance_id, all instances' host rows are returned."""
+    async with client_session(build_server()) as client:
+        result = await client.call_tool("query_compute_host_logs", {"resource_id": HOST_VMSS_RID})
+        sc = result.structuredContent
+        instances = {r["instance_id"] for r in sc["rows"]}
+        assert {"data-vmss_0", "data-vmss_1"} <= instances
+
+
+async def test_compute_query_deterministic():
+    """3.4-INT-006: identical query twice → identical rows."""
+    async with client_session(build_server()) as client:
+        a = await client.call_tool("query_compute_guest_logs", {"resource_id": GUEST_VM_RID})
+        b = await client.call_tool("query_compute_guest_logs", {"resource_id": GUEST_VM_RID})
+        assert a.structuredContent["rows"] == b.structuredContent["rows"]

@@ -23,7 +23,30 @@ resources:
     subscription_id: "00000000-0000-0000-0000-000000000001"
     location: "eastus"
     instances: []
-telemetry: {}
+telemetry:
+  compute_guest_logs:
+    - time_generated: "2026-06-18T08:31:00Z"
+      resource_id: "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data/providers/Microsoft.Compute/virtualMachines/sql-node-01"
+      subscription_id: "00000000-0000-0000-0000-000000000001"
+      instance_id: ""
+      computer: "sql-node-01"
+      channel: "Application"
+      provider_name: "MSSQLSERVER"
+      event_id: 17055
+      level: "Information"
+      task: "Server"
+      message: "Routine informational database event."
+    - time_generated: "2026-06-18T08:42:10Z"
+      resource_id: "/subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data/providers/Microsoft.Compute/virtualMachines/sql-node-01"
+      subscription_id: "00000000-0000-0000-0000-000000000001"
+      instance_id: ""
+      computer: "sql-node-01"
+      channel: "System"
+      provider_name: "Service Control Manager"
+      event_id: 7031
+      level: "Error"
+      task: "None"
+      message: "The critical service terminated unexpectedly. It has done this 3 time(s)."
 root_cause:
   category: compute_guest
   summary: >-

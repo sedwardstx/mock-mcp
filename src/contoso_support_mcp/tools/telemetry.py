@@ -99,3 +99,79 @@ def register_telemetry_tools(mcp: FastMCP, repo: Repository) -> None:
             time_range=time_range,
             filters={"action": action},
         )
+
+    def _validate_instance(resource_id: str, instance_id: str | None) -> str | None:
+        """Return an error message if instance_id is invalid for a known resource."""
+        if instance_id is None:
+            return None
+        resource = repo.get_resource(resource_id)
+        if resource is not None and instance_id not in resource.instances:
+            return (
+                f"instance_id {instance_id!r} is not an instance of {resource_id}; "
+                f"valid instances: {resource.instances}"
+            )
+        return None
+
+    @mcp.tool(
+        description=(
+            "Query mock Compute host/platform logs (Azure-side host events, not "
+            "in-guest) for a VM or VMSS. Params: resource_id (required), time_range "
+            "('START/END' ISO-8601, optional), instance_id (optional VMSS instance, "
+            "e.g. 'data-vmss_0'), event_name (optional filter). Returns rows with "
+            "columns incl. instance_id, host_node, event_name, health_status, "
+            "maintenance_type, level, message. Empty match returns 'ok' with no rows; "
+            "an unknown VMSS instance returns 'invalid_request'."
+        )
+    )
+    def query_compute_host_logs(
+        resource_id: str,
+        time_range: str | None = None,
+        instance_id: str | None = None,
+        event_name: str | None = None,
+    ) -> TelemetryResult:
+        err = _validate_instance(resource_id, instance_id)
+        if err is not None:
+            return TelemetryResult(
+                status="invalid_request", resource_id=resource_id,
+                table="compute_host_logs", count=0, rows=[], message=err,
+            )
+        return _query(
+            repo,
+            table="compute_host_logs",
+            resource_id=resource_id,
+            time_range=time_range,
+            instance_id=instance_id,
+            filters={"event_name": event_name},
+        )
+
+    @mcp.tool(
+        description=(
+            "Query mock Compute in-guest Windows logs (Windows Event Log style) for "
+            "a VM or VMSS. Windows-only. Params: resource_id (required), time_range "
+            "('START/END' ISO-8601, optional), instance_id (optional VMSS instance), "
+            "level (optional filter, e.g. 'Error'). Returns rows with columns incl. "
+            "instance_id, computer, channel, provider_name, event_id, level, task, "
+            "message. Empty match returns 'ok' with no rows; an unknown VMSS instance "
+            "returns 'invalid_request'."
+        )
+    )
+    def query_compute_guest_logs(
+        resource_id: str,
+        time_range: str | None = None,
+        instance_id: str | None = None,
+        level: str | None = None,
+    ) -> TelemetryResult:
+        err = _validate_instance(resource_id, instance_id)
+        if err is not None:
+            return TelemetryResult(
+                status="invalid_request", resource_id=resource_id,
+                table="compute_guest_logs", count=0, rows=[], message=err,
+            )
+        return _query(
+            repo,
+            table="compute_guest_logs",
+            resource_id=resource_id,
+            time_range=time_range,
+            instance_id=instance_id,
+            filters={"level": level},
+        )
