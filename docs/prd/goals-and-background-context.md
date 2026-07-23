@@ -22,3 +22,4 @@ The Contoso Support Ticketing MCP Server closes that gap. It presents a believab
 | Date       | Version | Description                        | Author       |
 |------------|---------|------------------------------------|--------------|
 | 2026-07-23 | 1.0     | Initial PRD draft from Project Brief | John (PM)  |
+| 2026-07-24 | 1.1     | Added Epic 5 (Workshop Integration): FR16–19, NFR11, KB tool + starter scaffold + workbook re-theme | Sarah (PO) |

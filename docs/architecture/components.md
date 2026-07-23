@@ -20,6 +20,7 @@
 - Ticket tools: `get_ticket`, `list_tickets`, `search_tickets`
 - Resource tool: `get_ticket_resources`
 - Telemetry tools: `query_arm_traces`, `query_network_logs`, `query_compute_host_logs`, `query_compute_guest_logs`
+- KB tool (Epic 5): `search_known_issues` (generic remediation; own module `tools/kb.py`)
 - Health tool: `get_server_info`
 - Prompts: triage/scoping, follow-up questioning, iterative investigation, RCA
 
@@ -33,8 +34,9 @@
 
 **Key Interfaces:**
 - `get_ticket(id)`, `search_tickets(filters, page)`, `list_tickets(page)`
-- `get_resources(ticket_id)`
+- `get_resources(ticket_id)`, `get_resource(resource_id)`
 - `query_telemetry(table, resource_id, time_range, filters, instance_id?)`
+- `search_known_issues(query?, product?, category?)` (Epic 5; over the loaded KB list)
 
 **Dependencies:** Loader (data), Models
 

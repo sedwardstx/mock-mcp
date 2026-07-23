@@ -24,6 +24,7 @@ The Contoso Support Ticketing MCP Server closes that gap. It presents a believab
 | Date       | Version | Description                        | Author       |
 |------------|---------|------------------------------------|--------------|
 | 2026-07-23 | 1.0     | Initial PRD draft from Project Brief | John (PM)  |
+| 2026-07-24 | 1.1     | Added Epic 5 (Workshop Integration): FR16–19, NFR11, KB tool + starter scaffold + workbook re-theme | Sarah (PO) |
 
 ## Requirements
 
@@ -44,6 +45,10 @@ The Contoso Support Ticketing MCP Server closes that gap. It presents a believab
 - FR13: Telemetry returned by the tools SHALL be internally consistent with the ticket and root cause for a given scenario (e.g., the logs contain evidence that plausibly supports the defined root cause), including realistic noise where appropriate.
 - FR14: The server SHALL provide a lightweight health/identity tool (e.g., a status or "about" tool) so students can confirm a successful connection before beginning a lab.
 - FR15: Tool inputs and outputs SHALL be described with clear MCP schemas and descriptions sufficient for an agent to select and call the right tool without external documentation.
+- FR16: The server SHALL expose a read-only **known-issues KB tool** (`search_known_issues`) returning **generic** Azure remediation guidance filterable by product, root-cause category, and keyword. Its data SHALL be a separate curated dataset, decoupled from per-scenario root causes, so it does not reveal the per-ticket grading answer.
+- FR17: The repository SHALL ship an **Azure-themed Copilot workshop starter scaffold** enabling the Day-1 labs: custom instructions, reusable prompt files, an agent skill (procedure + helper script + reference table), and sample logs/tickets/queries.
+- FR18: The repository SHALL ship **Copilot custom agents** — three domain specialists (compute, network, control-plane), a routing coordinator, and a ticket-writer — plus a `.vscode/mcp.json` that wires this server, supporting the Day-2 MCP + agent labs.
+- FR19: The participant workbook SHALL be **Azure-themed** and its MCP labs SHALL target this server — correct `.vscode/mcp.json`, real `TICKET-XXXXXXXX` ids, and this server's actual tool names.
 
 ### Non Functional
 
@@ -57,6 +62,7 @@ The Contoso Support Ticketing MCP Server closes that gap. It presents a believab
 - NFR8: The server SHALL conform to the MCP specification such that any MCP-compatible agent framework or Skill can connect and use its tools/prompts.
 - NFR9: The scenario dataset SHALL be authored/structured for maintainability and extensibility, allowing new scenarios to be added without code changes to the server core.
 - NFR10: Tickets SHALL be read-only in the MVP (no create/update/resolve operations).
+- NFR11: Workshop starter assets and sample data SHALL contain no secrets and no customer PII; the server SHALL require no credentials to run in either transport.
 
 ## Technical Assumptions
 
@@ -88,6 +94,7 @@ A single repository holds the MCP server code, the mock data/scenario library, p
 - **Epic 2 — Mock Data Model & Ticket Tools:** Define the scenario/ticket/resource data model, expose ticket tools (list, search/filter, get) and the ticket→resource pivot, and author a first batch of scenarios — establishing the data foundation and ticket-browsing value.
 - **Epic 3 — Kusto Telemetry Tools & Correlation:** Add Kusto-style query tools (ARM traces, Network logs, Compute host + Windows guest logs for VM/VMSS) returning scenario-correlated telemetry, backfill telemetry for existing scenarios, and author more scenarios including the first multi-round ones — enabling full end-to-end RCA.
 - **Epic 4 — Full Scenario Library & Guided Prompts:** Grow the library to 100+ scenarios hitting the target single-shot vs. ≥25% multi-round distribution, validate consistency at scale, and author the crafted MCP prompts for scoping / follow-up / investigation / RCA — completing the MVP.
+- **Epic 5 — Workshop Integration (brownfield enhancement):** Add a read-only known-issues KB tool; ship the Azure-themed GitHub Copilot workshop starter scaffold (custom instructions, prompts, a log-triage skill, sample logs/tickets, custom agents, and a `.vscode/mcp.json`) wired to this server; and re-theme the participant workbook so its MCP labs run against this server end to end.
 
 ## Epic 1 Foundation & Connectable MCP Server
 
@@ -353,6 +360,64 @@ so that I can trust the data and run graded labs on day one.
 3: Classroom run docs are finalized for both transport modes, including how to select scenarios and verify connectivity.
 4: A full test run (unit + integration + end-to-end) passes against the complete library and tool/prompt surface.
 5: The determinism guarantee is verified across the full library (identical inputs → identical outputs) as an automated check.
+
+## Epic 5 Workshop Integration
+
+**Epic Goal:** Make our server the spine of the 2-day GitHub Copilot workshop (`docs/external/Participant_Workbook.md`). Add a read-only known-issues KB tool, ship the Azure-themed Copilot starter scaffold (instructions, prompts, a log-triage skill, sample data, custom agents, and `.vscode/mcp.json`) so this repo doubles as the workshop starter repo, and re-theme the participant workbook so its MCP labs (4–6) run against this server. All new data stays mocked/PII-free and the existing scenario dataset, tools, and grading key are untouched. (Brownfield enhancement — builds on Epics 1–4.)
+
+### Story 5.1 Known-Issues KB Tool
+
+As a student's AI agent,
+I want to search a read-only Azure known-issues knowledge base,
+so that I can look up generic remediation guidance for a symptom without it revealing the ticket-specific answer.
+
+#### Acceptance Criteria
+
+1: A `search_known_issues` tool accepts optional `query` (keyword), `product`, and `category` filters (AND semantics) and returns matching known-issue entries (title, product, category, symptom, remediation, optional doc link).
+2: The KB is a **separate curated dataset** (≥ 12 generic entries across ARM/Network/Compute-host/Compute-guest and the three products) that does NOT copy any per-scenario root cause/resolution — it cannot leak the grading key.
+3: An invalid `category` returns a structured `invalid_request`; no matches returns `ok` with an empty list; results are deterministic.
+4: The tool exposes a clear MCP schema/description stating it is generic guidance, not ticket-specific RCA.
+5: Unit + integration tests cover loading/validation, each filter, keyword search, no-match, and invalid category; the KB loads at startup via the same fail-fast pattern as scenarios.
+
+### Story 5.2 Day-1 Workshop Starter Scaffold
+
+As an instructor,
+I want the Azure-themed Copilot starter files (instructions, prompts, a log-triage skill, sample data, and MCP config) in this repo,
+so that participants can run the Day-1 labs and connect to this server without a separate starter repo.
+
+#### Acceptance Criteria
+
+1: `.github/copilot-instructions.md` (Azure support context: Compute/Networking/ARM control-plane; cite-evidence; no PII; escalation) and a scoped `.github/instructions/*.instructions.md` example are present.
+2: Two reusable prompt files (`summarize-ticket`, `draft-customer-reply`) with correct frontmatter are present and Azure-worded.
+3: A `.github/skills/log-triage/` skill (SKILL.md + `parse_logs.py` + `error-codes.md`) triages Azure logs; the helper ranks ERROR/FATAL lines by an `AZURE-####` code.
+4: `samples/logs/*.log`, `samples/tickets/*.md`, and a `samples/queries/*.kql` exist with realistic Azure content; sample ticket ids match server fixtures; log codes match the skill's reference table and regex.
+5: `.vscode/mcp.json` (top-level `servers`) wires this server for stdio (with a commented HTTP + inputs example); it does not disturb `.vscode/settings.json`.
+
+### Story 5.3 Day-2 Custom Agents
+
+As an instructor,
+I want the specialist and coordinator custom agents wired to this server's tools,
+so that participants can run the Day-2 agent + coordinator labs.
+
+#### Acceptance Criteria
+
+1: Three specialist agents exist — compute-diagnostics, network-diagnostics, controlplane-diagnostics — each referencing this server and naming the specific telemetry tools it uses.
+2: A `support-triage` coordinator agent (tools: ['agent']) routes to the three specialists and offers a "Draft the resolution" handoff.
+3: A minimal `ticket-writer` agent exists so the coordinator handoff resolves out of the box.
+4: Agent frontmatter follows the workbook's conventions; specialist names exactly match the coordinator's `agents:` list.
+
+### Story 5.4 Workbook Azure Re-Theme
+
+As an instructor,
+I want the participant workbook re-themed to Azure with its MCP labs pointed at this server,
+so that the whole workshop is consistent and runnable against our real server.
+
+#### Acceptance Criteria
+
+1: The workbook's product fiction (Gateway/Vault/Store) and `CONTOSO-####` ids are replaced with our Azure domains (Compute/Networking/ARM control-plane) and real `TICKET-XXXXXXXX` ids.
+2: Lab 4's MCP config is replaced with our `.vscode/mcp.json` (stdio + http), the example flow uses real tools (`get_ticket` → `get_ticket_resources` → `query_arm_traces`), and it notes the server's MCP prompts.
+3: Labs 5–6 reference the three Azure specialists and the coordinator; the KB-only variant uses `search_known_issues`.
+4: Filenames/ids/log codes referenced in the workbook match the Story 5.2 assets exactly; a grep confirms no residual `CONTOSO-`/`Gateway`/`Vault`/`Store`/`@contoso/mcp-ticketing`/`contoso-kb`.
 
 ## Checklist Results Report
 

@@ -72,3 +72,12 @@ The domain centers on a **Scenario** aggregate: a self-contained unit linking a 
 **Key Attributes:**
 - RootCause: category: enum(`arm`, `network`, `compute_host`, `compute_guest`), summary: str, resolution: str
 - InvestigationStep: order: int, tool: str, params: dict, reveals: str
+
+## KnownIssue (KB — Epic 5)
+
+**Purpose:** A generic, curated Azure known-issue entry backing the `search_known_issues` tool. Deliberately **decoupled** from scenarios' `RootCause` so the KB never exposes the per-ticket grading answer — it offers general remediation guidance an agent can consult but must still confirm via telemetry.
+
+**Key Attributes:**
+- id: str (`KB-<DOMAIN>-###`), title: str, product: str, category: enum(same `RootCauseCategory`), symptom: str, remediation: str, doc_link: str | None
+
+**Relationships:** Independent — lives in `fixtures/known_issues.yaml` (sibling of `scenarios/`, ignored by the scenario glob), loaded once at startup and held by the Repository.
