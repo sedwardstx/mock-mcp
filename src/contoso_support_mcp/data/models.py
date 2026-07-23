@@ -14,6 +14,7 @@ from enum import StrEnum
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 TICKET_ID_RE = re.compile(r"^TICKET-\d{8}$")
+KNOWN_ISSUE_ID_RE = re.compile(r"^KB-[A-Z]+-\d{3}$")
 
 _STRICT = ConfigDict(extra="forbid")
 
@@ -199,3 +200,29 @@ class Scenario(BaseModel):
     telemetry: Telemetry = Field(default_factory=Telemetry)
     root_cause: RootCause
     investigation_path: list[InvestigationStep] = Field(default_factory=list)
+
+
+class KnownIssue(BaseModel):
+    """A generic Azure known-issue entry backing the read-only KB tool.
+
+    Deliberately decoupled from `Scenario.root_cause` — this is general remediation
+    guidance keyed by product/category/keyword, NOT a per-ticket answer, so it can
+    never leak the grading key (docs/scenario-index.md).
+    """
+
+    model_config = _STRICT
+
+    id: str
+    title: str
+    product: str
+    category: RootCauseCategory
+    symptom: str
+    remediation: str
+    doc_link: str | None = None
+
+    @field_validator("id")
+    @classmethod
+    def _valid_kb_id(cls, v: str) -> str:
+        if not KNOWN_ISSUE_ID_RE.match(v):
+            raise ValueError(f"KB id must match KB-<DOMAIN>-### (e.g. KB-ARM-001), got {v!r}")
+        return v

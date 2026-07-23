@@ -1,0 +1,100 @@
+# Read-only Azure known-issues KB backing the `search_known_issues` tool.
+# GENERIC guidance only — deliberately decoupled from scenario root causes so it
+# never reveals a per-ticket grading answer. Keep remediation general (by class of
+# issue), NOT copied from any scenario's root_cause.resolution.
+known_issues:
+  # --- ARM control-plane ---
+  - id: KB-ARM-001
+    title: "VM start or deployment fails with AllocationFailed"
+    product: "Azure Virtual Machines"
+    category: arm
+    symptom: "allocation failure; VM will not start; capacity error in a zone/region"
+    remediation: "Retry in a different availability zone or region, resize to an available SKU, or request additional capacity/quota for the target region."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machines/troubleshooting/allocation-failure"
+  - id: KB-ARM-002
+    title: "Deployment or update denied by Azure Policy"
+    product: "Azure Virtual Machines"
+    category: arm
+    symptom: "operation rejected immediately; authorization or policy deny"
+    remediation: "Review the Azure Policy assignments in scope, bring the resource into compliance, or request a policy exemption via the governance team."
+    doc_link: "https://learn.microsoft.com/azure/governance/policy/how-to/determine-non-compliance"
+  - id: KB-ARM-003
+    title: "Scale-out blocked by vCPU quota"
+    product: "Azure Virtual Machine Scale Sets"
+    category: arm
+    symptom: "scale set will not add instances; quota exceeded"
+    remediation: "Check the subscription's regional vCPU quota for the SKU family and request a quota increase, or choose a SKU with available quota."
+    doc_link: "https://learn.microsoft.com/azure/quotas/quickstart-increase-quota-portal"
+  - id: KB-ARM-004
+    title: "Control-plane operation fails: image not found (404)"
+    product: "Azure Virtual Machine Scale Sets"
+    category: arm
+    symptom: "create fails referencing a custom image; 404 image not found"
+    remediation: "Verify the image reference (id, gallery/version, region replication) and correct it before recreating the resource."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machines/shared-image-galleries"
+  # --- Network ---
+  - id: KB-NET-001
+    title: "NSG rule blocking required traffic"
+    product: "Azure Networking"
+    category: network
+    symptom: "connection timeout; traffic blocked after a network change"
+    remediation: "Inspect the effective NSG rules for the flow; amend or reprioritize the rule so the required port/direction is allowed."
+    doc_link: "https://learn.microsoft.com/azure/virtual-network/diagnose-network-traffic-filter-problem"
+  - id: KB-NET-002
+    title: "Load-balancer health probe failing"
+    product: "Azure Networking"
+    category: network
+    symptom: "intermittent 503; backend marked unhealthy"
+    remediation: "Ensure the NSG allows the probe port from the AzureLoadBalancer service tag and that the backend responds on the probe path."
+    doc_link: "https://learn.microsoft.com/azure/load-balancer/load-balancer-troubleshoot-health-probe-status"
+  - id: KB-NET-003
+    title: "Cannot RDP or SSH to a VM"
+    product: "Azure Virtual Machines"
+    category: network
+    symptom: "cannot rdp 3389 or ssh 22; connection times out"
+    remediation: "Confirm an inbound NSG rule allows the management port from your source range, and check the VM's power/network state."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machines/troubleshooting/troubleshoot-rdp-connection"
+  # --- Compute host ---
+  - id: KB-HOST-001
+    title: "Unexpected VM reboot (platform host reboot)"
+    product: "Azure Virtual Machines"
+    category: compute_host
+    symptom: "VM rebooted with no user action; unexpected reboot overnight"
+    remediation: "Check host/platform events and Scheduled Events; use availability zones or an availability set to reduce impact of host events."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machines/windows/scheduled-events"
+  - id: KB-HOST-002
+    title: "Brief unresponsiveness from live migration / maintenance"
+    product: "Azure Virtual Machines"
+    category: compute_host
+    symptom: "VM paused briefly then recovered; maintenance pause"
+    remediation: "Expected platform behavior during live migration/maintenance; add app-level retry and use availability zones for resilience."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machines/maintenance-and-updates"
+  - id: KB-HOST-003
+    title: "VMSS instances unhealthy from host degradation"
+    product: "Azure Virtual Machine Scale Sets"
+    category: compute_host
+    symptom: "some scale set instances unhealthy while others are fine"
+    remediation: "Reimage or redeploy the affected instances; the scale set redistributes across healthy host nodes."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-instance-repairs"
+  # --- Compute guest (Windows) ---
+  - id: KB-GUEST-001
+    title: "Windows service crashing (Service Control Manager events)"
+    product: "Azure Virtual Machines"
+    category: compute_guest
+    symptom: "service crashing; app offline intermittently; SCM event 7031/7034"
+    remediation: "Investigate the in-guest Windows Event Log and the application; the Azure host is healthy, so treat this as an in-guest software issue."
+    doc_link: "https://learn.microsoft.com/windows-server/administration/windows-commands/sc-query"
+  - id: KB-GUEST-002
+    title: "In-guest out-of-memory / memory pressure"
+    product: "Azure Virtual Machines"
+    category: compute_guest
+    symptom: "application crashes under memory pressure; out of memory"
+    remediation: "Right-size the VM SKU or fix the application's memory usage; confirm the host shows no fault before escalating to the platform."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machines/sizes"
+  - id: KB-GUEST-003
+    title: "Service won't start — guest disk full"
+    product: "Azure Virtual Machines"
+    category: compute_guest
+    symptom: "service fails to start; disk full in guest"
+    remediation: "Free space or expand the OS/data disk in-guest; this is an in-guest capacity issue, not an Azure platform fault."
+    doc_link: "https://learn.microsoft.com/azure/virtual-machines/windows/expand-os-disk"
