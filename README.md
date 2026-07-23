@@ -247,6 +247,9 @@ uv run ruff format   # format
 
 ## For instructors — selecting scenarios & grading
 
+> 👩‍🏫 See the **[Instructor Guide](docs/instructor-guide.md)** for hosting the
+> server for a class, picking a scenario mix, designing labs, and grading RCAs.
+
 - **`docs/scenario-index.md`** — one row per scenario: ticket id, product, persona,
   difficulty, root-cause domain, title, the **expected root cause** (the grading
   answer), and the intended **investigation tool sequence**. Use it to map labs to
