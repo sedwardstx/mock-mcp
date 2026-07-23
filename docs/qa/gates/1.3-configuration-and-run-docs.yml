@@ -1,0 +1,40 @@
+schema: 1
+story: "1.3"
+story_title: "Configuration & Classroom Run Documentation"
+gate: PASS
+status_reason: "Config validation produces clean exit-2 errors (tested); Quickstart matches the real CLI; both-mode health confirmation validated. No critical/high risks."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T14:00:00Z"
+
+top_issues: []
+waiver: { active: false }
+
+quality_score: 100
+expires: "2026-08-06T14:00:00Z"
+
+evidence:
+  tests_reviewed: 14
+  risks_identified: 3
+  trace:
+    ac_covered: [1, 2, 3, 4, 5]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: "Input validation on port/transport; no new surface."
+  performance:
+    status: PASS
+    notes: "N/A — config/docs story."
+  reliability:
+    status: PASS
+    notes: "Fail-fast clean CLI errors (exit 2), no stack traces."
+  maintainability:
+    status: PASS
+    notes: "Small, focused _port validator; README commands are the tested commands."
+
+recommendations:
+  immediate: []
+  future:
+    - action: "Keep README Quickstart in sync as new CLI flags are added."
+      refs: ["README.md"]
