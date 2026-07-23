@@ -1,0 +1,40 @@
+schema: 1
+story: "1.1"
+story_title: "Project Scaffold & Health Tool (stdio)"
+gate: PASS
+status_reason: "All 6 ACs implemented and covered by passing tests; no critical/high risks; NFRs pass. Foundational scaffold is clean and reproducible."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-23T12:00:00Z"
+
+top_issues: []
+waiver: { active: false }
+
+quality_score: 100
+expires: "2026-08-06T12:00:00Z"
+
+evidence:
+  tests_reviewed: 4
+  risks_identified: 4
+  trace:
+    ac_covered: [1, 2, 3, 4, 5, 6]
+    ac_gaps: []
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: "No real data/secrets; no auth surface in this story. stdout-discipline guard prevents transport corruption."
+  performance:
+    status: PASS
+    notes: "Trivial in-memory operations; tests run <1s."
+  reliability:
+    status: PASS
+    notes: "Health tool deterministic; CLI validates transport choice via argparse."
+  maintainability:
+    status: PASS
+    notes: "Clean layering (surface/data seam), pure server_info() extracted for testability, typed FastMCP param, documented."
+
+recommendations:
+  immediate: []
+  future:
+    - action: "Verify/confirm streamable-HTTP transport API when Story 1.2 adds network mode."
+      refs: ["src/contoso_support_mcp/__main__.py"]

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, Field
 
 from .. import SERVER_NAME, __version__
@@ -20,7 +21,7 @@ def server_info() -> ServerInfo:
     return ServerInfo(name=SERVER_NAME, version=__version__, status="ok")
 
 
-def register_health_tools(mcp) -> None:
+def register_health_tools(mcp: FastMCP) -> None:
     """Register health tools on the given FastMCP instance."""
 
     @mcp.tool(
