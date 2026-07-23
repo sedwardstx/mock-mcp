@@ -9,6 +9,12 @@ Everything the server returns is **mocked** — realistic support tickets and
 Azure-style logs — so there's no Azure subscription, no credentials, and no
 internet needed at runtime. You just connect and investigate.
 
+> **Taking the instructor-led GitHub Copilot workshop?** The starter files
+> (custom instructions, prompts, a log-triage skill, specialist/coordinator
+> agents, sample data, and a ready `.vscode/mcp.json`) are provided as a bundle at
+> **`docs/assets/workshop/`** — read its `README.md` for the copy-into-place setup,
+> and follow **`docs/external/Participant_Workbook.md`** for the labs.
+
 ---
 
 ## 1. What you get
@@ -26,6 +32,7 @@ Once connected, your agent can call these **tools**:
 | `query_network_logs` | Network / NSG flow logs for a resource |
 | `query_compute_host_logs` | Azure host/platform logs (VM & VMSS, per-instance) |
 | `query_compute_guest_logs` | In-guest Windows logs (VM & VMSS, per-instance) |
+| `search_known_issues` | Look up **generic** Azure remediation guidance by keyword/product/category (a hint — *not* the ticket-specific answer) |
 
 …and these **guided prompts** (each takes a `ticket_id`):
 
@@ -233,6 +240,10 @@ reminds you to iterate — follow it.
   `invalid_request` telling you the valid instances.
 - **Empty results are normal**, not errors — they mean "no matching rows for that
   scope." A wrong domain/time window often returns empty; try another tool.
+- **Known-issues KB:** `search_known_issues` gives general remediation guidance for
+  a *class* of problem (filter by `query` keyword, `product`, or `category`). It's a
+  starting hint, **not** the ticket's specific root cause — always confirm with the
+  telemetry tools before you conclude.
 - **Time ranges** use the format `"START/END"` in ISO-8601, e.g.
   `"2026-05-14T09:00:00Z/2026-05-14T10:00:00Z"`. Either side may be blank.
 - **Offline server won't start?** Run `uv sync` in the repo first, and make sure
