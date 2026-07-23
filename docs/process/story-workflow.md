@@ -31,7 +31,7 @@ Standard pipeline run for **every** story, autonomously, pausing only for genuin
 | 2.1 | Scenario & Ticket Data Model + Loader | ✅ Done (Gate PASS) |
 | 2.2 | Ticket Retrieval Tools (List & Get) | ✅ Done (Gate PASS) |
 | 2.3 | Ticket Search & Filter Tool | ✅ Done (Gate PASS) |
-| 2.4 | Ticket → Resource Pivot Tool | Pending |
+| 2.4 | Ticket → Resource Pivot Tool | ✅ Done (Gate PASS) |
 | 2.5 | Seed Scenario Batch & Consistency Validation | Pending |
 | 3.1 | Telemetry Data Model & Mock Kusto Schemas | Pending |
 | 3.2 | ARM Control-Plane Trace Query Tool | Pending |
