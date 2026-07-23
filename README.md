@@ -33,14 +33,26 @@ uv run contoso-support-mcp --transport stdio
 Point your MCP-capable agent/client at this command. The server communicates
 over stdio; **do not** write to stdout from any other process sharing the pipe.
 
+### Instructor (network) — streamable HTTP transport
+
+Host one server for the whole class over the local network:
+
+```bash
+uv run contoso-support-mcp --transport http --host 0.0.0.0 --port 8000
+```
+
+The MCP endpoint is served at `http://<host>:<port>/mcp`. Students point their
+MCP clients at that URL. `--host` defaults to `127.0.0.1` (loopback only); use
+`0.0.0.0` to serve the classroom LAN. No auth/TLS in the MVP — intended for a
+trusted classroom network. Still fully offline: only a local port is bound.
+
 ### Confirm the connection
 
-Once connected, have your agent call the **`get_server_info`** tool. It returns
-the server name, version, and status (`ok`) — confirming your agent is talking
-to the Contoso Support server.
+Once connected (either transport), have your agent call the **`get_server_info`**
+tool. It returns the server name, version, and status (`ok`) — confirming your
+agent is talking to the Contoso Support server.
 
-> Additional transports (instructor-hosted network mode) and the ticket/telemetry
-> tools arrive in later stories.
+> The ticket and telemetry tools arrive in later stories.
 
 ## Develop & Test
 
