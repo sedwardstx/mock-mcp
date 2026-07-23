@@ -1,0 +1,33 @@
+scenario_id: TICKET-10000015
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000015
+  title: Windows Update reboot loop
+  symptom: Developer reports 'win-app-05' repeatedly restarts after installing updates.
+  azure_product: Azure Virtual Machines
+  persona: azure_developer
+  severity: Sev2
+  status: Active
+  created_at: '2026-05-16T10:00:00Z'
+  updated_at: '2026-05-16T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/win-app-05
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-app/providers/Microsoft.Compute/virtualMachines/win-app-05
+  resource_type: Microsoft.Compute/virtualMachines
+  name: win-app-05
+  resource_group: rg-app
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: centralus
+  instances: []
+telemetry: {}
+root_cause:
+  category: compute_guest
+  summary: An in-guest Windows Update triggered recurring restarts (guest event 1074/restart).
+  resolution: Roll back the problematic update or pause updates in-guest; the platform is healthy.
+investigation_path:
+- order: 1
+  tool: query_compute_guest_logs
+  params:
+    time_range: 2026-05-16T09:00:00Z/2026-05-16T11:00:00Z
+  reveals: A relevant Windows event appears in the in-guest logs.

@@ -1,0 +1,33 @@
+scenario_id: TICKET-10000017
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000017
+  title: DNS resolution failing from VM
+  symptom: Developer reports 'dns-vm-01' cannot resolve external hostnames since a recent change.
+  azure_product: Azure Networking
+  persona: azure_developer
+  severity: Sev2
+  status: Active
+  created_at: '2026-05-18T10:00:00Z'
+  updated_at: '2026-05-18T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net2/providers/Microsoft.Compute/virtualMachines/dns-vm-01
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net2/providers/Microsoft.Compute/virtualMachines/dns-vm-01
+  resource_type: Microsoft.Compute/virtualMachines
+  name: dns-vm-01
+  resource_group: rg-net2
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: westus2
+  instances: []
+telemetry: {}
+root_cause:
+  category: network
+  summary: An NSG rule blocks outbound DNS (UDP/TCP 53) from the VM.
+  resolution: Allow outbound 53 to the DNS resolver in the NSG.
+investigation_path:
+- order: 1
+  tool: query_network_logs
+  params:
+    time_range: 2026-05-18T09:00:00Z/2026-05-18T11:00:00Z
+  reveals: Traffic matching the reported flow shows Action=Deny in the network logs.

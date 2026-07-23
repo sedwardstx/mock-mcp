@@ -1,0 +1,35 @@
+scenario_id: TICKET-10000008
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000008
+  title: Some scale set instances are unhealthy
+  symptom: Admin reports two instances of 'data-vmss' show as unhealthy while others are fine.
+  azure_product: Azure Virtual Machine Scale Sets
+  persona: windows_admin
+  severity: Sev3
+  status: Active
+  created_at: '2026-05-09T10:00:00Z'
+  updated_at: '2026-05-09T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data/providers/Microsoft.Compute/virtualMachineScaleSets/data-vmss
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-data/providers/Microsoft.Compute/virtualMachineScaleSets/data-vmss
+  resource_type: Microsoft.Compute/virtualMachineScaleSets
+  name: data-vmss
+  resource_group: rg-data
+  subscription_id: 00000000-0000-0000-0000-000000000001
+  location: eastus
+  instances:
+  - data-vmss_0
+  - data-vmss_1
+telemetry: {}
+root_cause:
+  category: compute_host
+  summary: A platform host degradation affected specific nodes hosting those instances.
+  resolution: Reimage/redeploy the affected instances; the scale set spreads across healthy nodes.
+investigation_path:
+- order: 1
+  tool: query_compute_host_logs
+  params:
+    time_range: 2026-05-09T09:00:00Z/2026-05-09T11:00:00Z
+  reveals: A platform host event affecting the resource appears in the host logs.

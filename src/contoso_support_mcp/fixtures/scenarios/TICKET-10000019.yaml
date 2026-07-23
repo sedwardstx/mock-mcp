@@ -1,0 +1,33 @@
+scenario_id: TICKET-10000019
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000019
+  title: App pool crashing with .NET exception
+  symptom: Developer reports the app pool on 'svc-vm-06' recycles repeatedly due to an unhandled exception.
+  azure_product: Azure Virtual Machines
+  persona: azure_developer
+  severity: Sev4
+  status: Active
+  created_at: '2026-05-20T10:00:00Z'
+  updated_at: '2026-05-20T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-svc/providers/Microsoft.Compute/virtualMachines/svc-vm-06
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-svc/providers/Microsoft.Compute/virtualMachines/svc-vm-06
+  resource_type: Microsoft.Compute/virtualMachines
+  name: svc-vm-06
+  resource_group: rg-svc
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: centralus
+  instances: []
+telemetry: {}
+root_cause:
+  category: compute_guest
+  summary: An in-guest application fault crashes the worker process (guest application event).
+  resolution: Fix the application exception; the Azure host shows no fault.
+investigation_path:
+- order: 1
+  tool: query_compute_guest_logs
+  params:
+    time_range: 2026-05-20T09:00:00Z/2026-05-20T11:00:00Z
+  reveals: A relevant Windows event appears in the in-guest logs.

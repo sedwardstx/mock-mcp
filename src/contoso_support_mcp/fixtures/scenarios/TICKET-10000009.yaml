@@ -1,0 +1,34 @@
+scenario_id: TICKET-10000009
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000009
+  title: Intermittent 503s behind the load balancer
+  symptom: Developer reports intermittent HTTP 503 responses from a load-balanced app on 'lb-app-vm-01'.
+  azure_product: Azure Networking
+  persona: azure_developer
+  severity: Sev4
+  status: Active
+  created_at: '2026-05-10T10:00:00Z'
+  updated_at: '2026-05-10T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net/providers/Microsoft.Compute/virtualMachines/lb-app-vm-01
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-net/providers/Microsoft.Compute/virtualMachines/lb-app-vm-01
+  resource_type: Microsoft.Compute/virtualMachines
+  name: lb-app-vm-01
+  resource_group: rg-net
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: westus2
+  instances: []
+telemetry: {}
+root_cause:
+  category: network
+  summary: An NSG rule intermittently blocks the load balancer health-probe port, marking the backend
+    unhealthy.
+  resolution: Allow the load balancer probe port in the NSG (AzureLoadBalancer service tag).
+investigation_path:
+- order: 1
+  tool: query_network_logs
+  params:
+    time_range: 2026-05-10T09:00:00Z/2026-05-10T11:00:00Z
+  reveals: Traffic matching the reported flow shows Action=Deny in the network logs.

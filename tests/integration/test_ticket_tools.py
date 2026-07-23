@@ -79,4 +79,7 @@ async def test_search_combined_persona_and_product():
         sc = result.structuredContent
         assert sc["status"] == "ok"
         ids = [t["ticket_id"] for t in sc["tickets"]]
-        assert ids == ["TICKET-10000002"]
+        # AND semantics: every result matches both filters; the seed VMSS-networking
+        # sample TICKET-10000002 is among them.
+        assert "TICKET-10000002" in ids
+        assert all(t["persona"] == "azure_developer" for t in sc["tickets"])

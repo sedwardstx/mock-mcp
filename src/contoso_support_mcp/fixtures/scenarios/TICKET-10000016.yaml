@@ -1,0 +1,35 @@
+scenario_id: TICKET-10000016
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000016
+  title: "Scale set create fails \u2014 image not found"
+  symptom: Admin's new scale set 'img-vmss' fails to create referencing a custom image.
+  azure_product: Azure Virtual Machine Scale Sets
+  persona: windows_admin
+  severity: Sev3
+  status: Active
+  created_at: '2026-05-17T10:00:00Z'
+  updated_at: '2026-05-17T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-img/providers/Microsoft.Compute/virtualMachineScaleSets/img-vmss
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-img/providers/Microsoft.Compute/virtualMachineScaleSets/img-vmss
+  resource_type: Microsoft.Compute/virtualMachineScaleSets
+  name: img-vmss
+  resource_group: rg-img
+  subscription_id: 00000000-0000-0000-0000-000000000001
+  location: eastus
+  instances:
+  - img-vmss_0
+  - img-vmss_1
+telemetry: {}
+root_cause:
+  category: arm
+  summary: The control-plane operation returns a 404 for the referenced image (bad/missing image reference).
+  resolution: Correct the image reference (id/version) and recreate the scale set.
+investigation_path:
+- order: 1
+  tool: query_arm_traces
+  params:
+    time_range: 2026-05-17T09:00:00Z/2026-05-17T11:00:00Z
+  reveals: Control-plane operation failed with an error status in the ARM traces.

@@ -1,0 +1,33 @@
+scenario_id: TICKET-10000020
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000020
+  title: Outbound HTTPS blocked from VM
+  symptom: Admin reports 'egress-vm-01' can no longer reach external HTTPS endpoints after a network change.
+  azure_product: Azure Virtual Machines
+  persona: windows_admin
+  severity: Sev2
+  status: Active
+  created_at: '2026-05-21T10:00:00Z'
+  updated_at: '2026-05-21T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-edge/providers/Microsoft.Compute/virtualMachines/egress-vm-01
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000001/resourceGroups/rg-edge/providers/Microsoft.Compute/virtualMachines/egress-vm-01
+  resource_type: Microsoft.Compute/virtualMachines
+  name: egress-vm-01
+  resource_group: rg-edge
+  subscription_id: 00000000-0000-0000-0000-000000000001
+  location: eastus
+  instances: []
+telemetry: {}
+root_cause:
+  category: network
+  summary: An NSG rule denies outbound TCP 443 from the VM.
+  resolution: Allow the required outbound 443 destinations in the NSG.
+investigation_path:
+- order: 1
+  tool: query_network_logs
+  params:
+    time_range: 2026-05-21T09:00:00Z/2026-05-21T11:00:00Z
+  reveals: Traffic matching the reported flow shows Action=Deny in the network logs.

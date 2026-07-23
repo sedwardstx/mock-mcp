@@ -33,20 +33,30 @@ def test_list_tickets_deterministic_order():
 
 def test_search_single_filter_persona():
     tickets, total = _repo().search_tickets(persona="windows_admin")
-    assert total == 2
+    assert total >= 1
     assert all(t.persona == "windows_admin" for t in tickets)
 
 
 def test_search_combined_filters_and_semantics():
-    tickets, total = _repo().search_tickets(
+    repo = _repo()
+    combined, ctotal = repo.search_tickets(
         persona="windows_admin", azure_product="Azure Virtual Machines"
     )
-    assert total == 2
-    tickets2, total2 = _repo().search_tickets(
-        persona="azure_developer", azure_product="Azure Virtual Machines"
+    # Every result satisfies BOTH filters (AND semantics)...
+    assert all(
+        t.persona == "windows_admin" and t.azure_product == "Azure Virtual Machines"
+        for t in combined
     )
-    assert total2 == 0
-    assert tickets2 == []
+    # ...and the combined set is no larger than either single-filter set.
+    _, persona_total = repo.search_tickets(persona="windows_admin")
+    _, product_total = repo.search_tickets(azure_product="Azure Virtual Machines")
+    assert ctotal <= min(persona_total, product_total)
+
+
+def test_search_no_match_returns_empty():
+    tickets, total = _repo().search_tickets(status="Resolved")
+    assert total == 0
+    assert tickets == []
 
 
 def test_search_deterministic_order():

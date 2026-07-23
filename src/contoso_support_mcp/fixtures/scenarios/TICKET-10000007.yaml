@@ -1,0 +1,35 @@
+scenario_id: TICKET-10000007
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000007
+  title: Application crashes with out-of-memory
+  symptom: Developer reports their batch app on 'batch-vm-02' crashes intermittently; suspects memory
+    pressure.
+  azure_product: Azure Virtual Machines
+  persona: azure_developer
+  severity: Sev2
+  status: Active
+  created_at: '2026-05-08T10:00:00Z'
+  updated_at: '2026-05-08T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-batch/providers/Microsoft.Compute/virtualMachines/batch-vm-02
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-batch/providers/Microsoft.Compute/virtualMachines/batch-vm-02
+  resource_type: Microsoft.Compute/virtualMachines
+  name: batch-vm-02
+  resource_group: rg-batch
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: centralus
+  instances: []
+telemetry: {}
+root_cause:
+  category: compute_guest
+  summary: The in-guest application is terminated under memory pressure (guest OOM), not an Azure platform
+    fault.
+  resolution: Right-size the VM SKU or fix the app's memory usage; the host is healthy.
+investigation_path:
+- order: 1
+  tool: query_compute_guest_logs
+  params:
+    time_range: 2026-05-08T09:00:00Z/2026-05-08T11:00:00Z
+  reveals: A relevant Windows event appears in the in-guest logs.

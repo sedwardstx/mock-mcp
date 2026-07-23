@@ -1,0 +1,33 @@
+scenario_id: TICKET-10000011
+difficulty: single_round
+ticket:
+  ticket_id: TICKET-10000011
+  title: "Service won't start \u2014 disk full"
+  symptom: Developer reports a service on 'ci-vm-04' fails to start after a build filled the disk.
+  azure_product: Azure Virtual Machines
+  persona: azure_developer
+  severity: Sev3
+  status: Active
+  created_at: '2026-05-12T10:00:00Z'
+  updated_at: '2026-05-12T10:00:00Z'
+  resource_ids:
+  - /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-ci/providers/Microsoft.Compute/virtualMachines/ci-vm-04
+resources:
+- resource_id: /subscriptions/00000000-0000-0000-0000-000000000002/resourceGroups/rg-ci/providers/Microsoft.Compute/virtualMachines/ci-vm-04
+  resource_type: Microsoft.Compute/virtualMachines
+  name: ci-vm-04
+  resource_group: rg-ci
+  subscription_id: 00000000-0000-0000-0000-000000000002
+  location: centralus
+  instances: []
+telemetry: {}
+root_cause:
+  category: compute_guest
+  summary: The in-guest service fails because the OS/data disk is full (guest disk-space event).
+  resolution: Free space or expand the disk in-guest; not an Azure platform issue.
+investigation_path:
+- order: 1
+  tool: query_compute_guest_logs
+  params:
+    time_range: 2026-05-12T09:00:00Z/2026-05-12T11:00:00Z
+  reveals: A relevant Windows event appears in the in-guest logs.
