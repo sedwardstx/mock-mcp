@@ -1,0 +1,21 @@
+schema: 1
+story: "4.3"
+story_title: "Guided MCP Prompts for the Diagnostic Workflow"
+gate: PASS
+status_reason: "Three parameterized, tool-aware prompts covering scope/investigate/RCA; discoverable and verified by 3 integration tests incl. multi-round guidance; documented example."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-24T00:05:00Z"
+top_issues: []
+waiver: { active: false }
+quality_score: 100
+expires: "2026-08-07T00:05:00Z"
+evidence:
+  tests_reviewed: 3
+  risks_identified: 2
+  trace: { ac_covered: [1, 2, 3, 4, 5, 6], ac_gaps: [] }
+nfr_validation:
+  security: { status: PASS, notes: "Prompts are static text; no injection surface." }
+  performance: { status: PASS, notes: "Trivial." }
+  reliability: { status: PASS, notes: "Prompt/tool references guarded by tests." }
+  maintainability: { status: PASS, notes: "Single prompts module; clear names." }
+recommendations: { immediate: [], future: [] }

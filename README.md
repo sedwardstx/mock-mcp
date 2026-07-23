@@ -75,6 +75,25 @@ agent is talking to the Contoso Support server.
 
 > The ticket and telemetry tools arrive in later stories.
 
+## Guided prompts
+
+The server also exposes MCP **prompts** that coach an agent through a full
+diagnosis. Discover them with your client's prompt list; each takes a `ticket_id`:
+
+- **`triage_ticket`** — scope a ticket (product, persona, severity, affected resource).
+- **`investigate_incident`** — the full workflow: scope → follow-up questions →
+  iterative telemetry investigation (with a second round if the first is
+  inconclusive) → root-cause analysis.
+- **`summarize_rca`** — write up the root cause + evidence + resolution/next steps.
+
+**Example (multi-round scenario `TICKET-10000026`):** load `investigate_incident`
+with that ticket id. Following it, the agent scopes the ticket and resource, then
+queries the in-guest logs — which come back **benign/inconclusive**. Prompted to
+iterate, it forms a new hypothesis and queries the **host** logs, which reveal a
+`Degraded` host event — the real root cause. It then produces an RCA citing that
+row. (For a single-round example, use `TICKET-10000001`: the ARM traces show a
+`409 AllocationFailed` directly.)
+
 ## Develop & Test
 
 ```bash

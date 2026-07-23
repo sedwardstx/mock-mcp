@@ -11,6 +11,7 @@ from . import SERVER_NAME
 from .config import DEFAULT_FIXTURES_PATH
 from .data.loader import load_scenarios
 from .data.repository import Repository
+from .prompts.diagnostics import register_diagnostic_prompts
 from .tools.health import register_health_tools
 from .tools.resources import register_resource_tools
 from .tools.telemetry import register_telemetry_tools
@@ -43,6 +44,7 @@ def build_server(
     register_ticket_tools(mcp, repo)
     register_resource_tools(mcp, repo)
     register_telemetry_tools(mcp, repo)
+    register_diagnostic_prompts(mcp)
 
     logger.info("Registered tool surface for %s (%d scenarios)", SERVER_NAME, len(dataset))
     return mcp
