@@ -76,3 +76,26 @@ def register_telemetry_tools(mcp: FastMCP, repo: Repository) -> None:
             time_range=time_range,
             filters={"activity_status": activity_status},
         )
+
+    @mcp.tool(
+        description=(
+            "Query mock Network logs (NSG flow-log style) for a resource. Params: "
+            "resource_id (required ARM id), time_range ('START/END' ISO-8601, "
+            "optional), action (optional filter: 'Allow' or 'Deny'). Returns rows "
+            "with columns incl. flow_direction, source_ip/destination_ip, "
+            "source_port/destination_port, protocol, action, nsg_rule_name, and "
+            "byte/packet counts. Empty match returns status 'ok' with no rows."
+        )
+    )
+    def query_network_logs(
+        resource_id: str,
+        time_range: str | None = None,
+        action: str | None = None,
+    ) -> TelemetryResult:
+        return _query(
+            repo,
+            table="network_logs",
+            resource_id=resource_id,
+            time_range=time_range,
+            filters={"action": action},
+        )

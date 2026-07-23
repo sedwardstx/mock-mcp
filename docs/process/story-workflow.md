@@ -35,7 +35,7 @@ Standard pipeline run for **every** story, autonomously, pausing only for genuin
 | 2.5 | Seed Scenario Batch & Consistency Validation | ✅ Done (Gate PASS) |
 | 3.1 | Telemetry Data Model & Mock Kusto Schemas | ✅ Done (Gate PASS) |
 | 3.2 | ARM Control-Plane Trace Query Tool | ✅ Done (Gate PASS) |
-| 3.3 | Network Log Query Tool | Pending |
+| 3.3 | Network Log Query Tool | ✅ Done (Gate PASS) |
 | 3.4 | Compute Log Query Tools | Pending |
 | 3.5 | Telemetry Backfill & Multi-Round Authoring | Pending |
 | 4.1 | Expand Scenario Library to 100+ | Pending |
