@@ -13,3 +13,4 @@ This document outlines the overall project architecture for the **Contoso Suppor
 | Date       | Version | Description                          | Author         |
 |------------|---------|--------------------------------------|----------------|
 | 2026-07-23 | 1.0     | Initial architecture from PRD        | Winston (Arch) |
+| 2026-07-24 | 1.1     | Epic 5: KnownIssue model + search_known_issues tool; Workshop Integration assets section | Sarah (PO) |

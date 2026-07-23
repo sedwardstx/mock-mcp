@@ -1,0 +1,21 @@
+schema: 1
+story: "5.2"
+story_title: "Day-1 Workshop Starter Scaffold"
+gate: PASS
+status_reason: "All 5 ACs verified: AZURE-#### codes consistent across logs/table/parser, parser reports a code per sample, sample tickets resolve against server fixtures, .vscode/mcp.json valid JSONC (settings.json untouched), regression green."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-24T01:30:00Z"
+top_issues: []
+waiver: { active: false }
+quality_score: 100
+expires: "2026-08-07T01:30:00Z"
+evidence:
+  tests_reviewed: 5
+  risks_identified: 3
+  trace: { ac_covered: [1, 2, 3, 4, 5], ac_gaps: [] }
+nfr_validation:
+  security: { status: PASS, notes: "No secrets/PII; mcp.json needs no token; settings.json untouched." }
+  performance: { status: PASS, notes: "N/A — static assets." }
+  reliability: { status: PASS, notes: "Cross-file code consistency verified; ticket ids resolve." }
+  maintainability: { status: PASS, notes: "Single AZURE-#### code set; matches architecture/workshop-integration-epic-5." }
+recommendations: { immediate: [], future: [] }

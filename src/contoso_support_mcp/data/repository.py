@@ -9,13 +9,35 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 from .loader import Dataset
-from .models import AzureResource, Ticket
+from .models import AzureResource, KnownIssue, Ticket
 from .query import query_rows
 
 
 class Repository:
-    def __init__(self, dataset: Dataset) -> None:
+    def __init__(self, dataset: Dataset, known_issues: list[KnownIssue] | None = None) -> None:
         self._dataset = dataset
+        self._known_issues = list(known_issues or [])  # id-sorted by the loader
+
+    def search_known_issues(
+        self,
+        *,
+        query: str | None = None,
+        product: str | None = None,
+        category: str | None = None,
+    ) -> list[KnownIssue]:
+        """Filter the KB by product/category/keyword (AND), preserving id order."""
+        q = query.lower().strip() if query else None
+
+        def matches(k: KnownIssue) -> bool:
+            if product is not None and k.product != product:
+                return False
+            if category is not None and k.category != category:
+                return False
+            if q is not None and q not in f"{k.title} {k.symptom} {k.remediation}".lower():
+                return False
+            return True
+
+        return [k for k in self._known_issues if matches(k)]
 
     def get_ticket(self, ticket_id: str) -> Ticket | None:
         scenario = self._dataset.get_by_ticket(ticket_id)

@@ -17,6 +17,10 @@
 - FR13: Telemetry returned by the tools SHALL be internally consistent with the ticket and root cause for a given scenario (e.g., the logs contain evidence that plausibly supports the defined root cause), including realistic noise where appropriate.
 - FR14: The server SHALL provide a lightweight health/identity tool (e.g., a status or "about" tool) so students can confirm a successful connection before beginning a lab.
 - FR15: Tool inputs and outputs SHALL be described with clear MCP schemas and descriptions sufficient for an agent to select and call the right tool without external documentation.
+- FR16: The server SHALL expose a read-only **known-issues KB tool** (`search_known_issues`) returning **generic** Azure remediation guidance filterable by product, root-cause category, and keyword. Its data SHALL be a separate curated dataset, decoupled from per-scenario root causes, so it does not reveal the per-ticket grading answer.
+- FR17: The repository SHALL ship an **Azure-themed Copilot workshop starter scaffold** enabling the Day-1 labs: custom instructions, reusable prompt files, an agent skill (procedure + helper script + reference table), and sample logs/tickets/queries.
+- FR18: The repository SHALL ship **Copilot custom agents** — three domain specialists (compute, network, control-plane), a routing coordinator, and a ticket-writer — plus a `.vscode/mcp.json` that wires this server, supporting the Day-2 MCP + agent labs.
+- FR19: The participant workbook SHALL be **Azure-themed** and its MCP labs SHALL target this server — correct `.vscode/mcp.json`, real `TICKET-XXXXXXXX` ids, and this server's actual tool names.
 
 ## Non Functional
 
@@ -30,3 +34,4 @@
 - NFR8: The server SHALL conform to the MCP specification such that any MCP-compatible agent framework or Skill can connect and use its tools/prompts.
 - NFR9: The scenario dataset SHALL be authored/structured for maintainability and extensibility, allowing new scenarios to be added without code changes to the server core.
 - NFR10: Tickets SHALL be read-only in the MVP (no create/update/resolve operations).
+- NFR11: Workshop starter assets and sample data SHALL contain no secrets and no customer PII; the server SHALL require no credentials to run in either transport.

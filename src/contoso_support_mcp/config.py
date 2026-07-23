@@ -7,6 +7,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 DEFAULT_FIXTURES_PATH = Path(__file__).parent / "fixtures" / "scenarios"
+DEFAULT_KNOWN_ISSUES_PATH = Path(__file__).parent / "fixtures" / "known_issues.yaml"
 
 
 class Settings(BaseModel):

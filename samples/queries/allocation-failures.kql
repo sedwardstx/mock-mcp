@@ -1,0 +1,9 @@
+// Demo KQL: recent ARM control-plane allocation failures.
+// (Illustrative — the .github/instructions/kql.instructions.md guidance applies
+//  to files like this: time-scoped, resource-scoped, projected columns.)
+AzureActivity
+| where TimeGenerated between (ago(1d) .. now())
+| where OperationNameValue == "Microsoft.Compute/virtualMachines/start/action"
+| where ActivityStatusValue == "Failed" and SubStatusValue == "AllocationFailed"
+| project TimeGenerated, _ResourceId, SubStatusValue, Properties
+| order by TimeGenerated desc

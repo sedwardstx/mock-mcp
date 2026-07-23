@@ -12,7 +12,7 @@ from pathlib import Path
 import yaml
 from pydantic import ValidationError
 
-from .models import Scenario
+from .models import KnownIssue, Scenario
 
 
 class FixtureValidationError(Exception):
@@ -73,3 +73,32 @@ def load_scenarios(path: Path) -> Dataset:
         scenarios.append(scenario)
 
     return Dataset(scenarios)
+
+
+def load_known_issues(path: Path) -> list[KnownIssue]:
+    """Load and validate the curated known-issues KB file.
+
+    Deterministic: returns entries sorted by id. Fails fast (FixtureValidationError)
+    on malformed YAML/schema or a duplicate id.
+    """
+    try:
+        raw = yaml.safe_load(path.read_text())
+    except yaml.YAMLError as exc:
+        raise FixtureValidationError(f"Invalid YAML in KB file {path.name}: {exc}") from exc
+
+    entries = (raw or {}).get("known_issues", [])
+    issues: list[KnownIssue] = []
+    seen_ids: set[str] = set()
+    for entry in entries:
+        try:
+            issue = KnownIssue.model_validate(entry)
+        except ValidationError as exc:
+            raise FixtureValidationError(
+                f"Invalid known-issue entry in {path.name}: {exc}"
+            ) from exc
+        if issue.id in seen_ids:
+            raise FixtureValidationError(f"Duplicate known-issue id {issue.id} in {path.name}")
+        seen_ids.add(issue.id)
+        issues.append(issue)
+
+    return sorted(issues, key=lambda k: k.id)

@@ -1,0 +1,28 @@
+{
+  // Contoso Support MCP server for the workshop (VS Code `servers` schema).
+  // Student / offline: runs the server from THIS repo over stdio via uv.
+  "servers": {
+    "contoso-support": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "${workspaceFolder}",
+        "contoso-support-mcp",
+        "--transport",
+        "stdio"
+      ]
+    }
+    // Instructor-hosted / online alternative — comment out the stdio block above
+    // and uncomment this to connect to a shared server on the classroom LAN:
+    // ,"contoso-support-http": {
+    //   "type": "http",
+    //   "url": "http://INSTRUCTOR_HOST:8000/mcp"
+    // }
+  }
+  // Secrets teaching reference (this mock server needs NO token; shown for Lab 4):
+  // ,"inputs": [
+  //   { "type": "promptString", "id": "api-token", "description": "API token", "password": true }
+  // ]
+}
