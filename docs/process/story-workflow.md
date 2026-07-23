@@ -1,0 +1,44 @@
+# Per-Story Development Workflow
+
+Standard pipeline run for **every** story, autonomously, pausing only for genuine blockers. A ship summary is produced at the end of each story.
+
+## Pipeline
+
+| # | Agent | Step | Output |
+|---|-------|------|--------|
+| 1 | SM (Bob) | Draft story from sharded epic + architecture | `docs/stories/{e}.{s}.*.md` (Status: Draft) |
+| 2 | PO (Sarah) | Validate draft (anti-hallucination, readiness) | Validation report → story Status: Approved |
+| 3 | QA (Quinn) | Risk analysis + test design | `docs/qa/assessments/{e}.{s}-risk-*.md`, `-test-design-*.md` |
+| 4 | Dev (James) | Implement (code + tests, run them) | Source + tests; story Dev Agent Record; Status: Review |
+| 5 | QA (Quinn) | Review + gate | `docs/qa/gates/{e}.{s}-*.yml`; story QA Results |
+| 6 | PO (Sarah) | Close | Status: Done |
+| 7 | — | Ship summary | What shipped + notes for the user |
+
+## Rules
+
+- Run steps 1→7 without stopping unless a genuine blocker requires a user decision.
+- Each gate decision (PASS/CONCERNS/FAIL/WAIVED) is recorded. CONCERNS with low residual risk may proceed; FAIL stops for fixes.
+- Commit at the end of each story (after PO close).
+- Environment: Python 3.11.8, uv 0.11.19 (architecture targeted 3.12; adapted to `>=3.11`).
+
+## Progress Tracker
+
+| Story | Title | Status |
+|-------|-------|--------|
+| 1.1 | Project Scaffold & Health Tool (stdio) | In progress |
+| 1.2 | Network Transport Mode | Pending |
+| 1.3 | Configuration & Classroom Run Docs | Pending |
+| 2.1 | Scenario & Ticket Data Model + Loader | Pending |
+| 2.2 | Ticket Retrieval Tools (List & Get) | Pending |
+| 2.3 | Ticket Search & Filter Tool | Pending |
+| 2.4 | Ticket → Resource Pivot Tool | Pending |
+| 2.5 | Seed Scenario Batch & Consistency Validation | Pending |
+| 3.1 | Telemetry Data Model & Mock Kusto Schemas | Pending |
+| 3.2 | ARM Control-Plane Trace Query Tool | Pending |
+| 3.3 | Network Log Query Tool | Pending |
+| 3.4 | Compute Log Query Tools | Pending |
+| 3.5 | Telemetry Backfill & Multi-Round Authoring | Pending |
+| 4.1 | Expand Scenario Library to 100+ | Pending |
+| 4.2 | Difficulty Tagging & Multi-Round Distribution | Pending |
+| 4.3 | Guided MCP Prompts | Pending |
+| 4.4 | Full-Library Consistency & Classroom Readiness | Pending |
