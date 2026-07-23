@@ -1,0 +1,27 @@
+schema: 1
+story: "5.1"
+story_title: "Known-Issues KB Tool"
+gate: PASS
+status_reason: "All 5 ACs covered by 11 passing tests; KB is decoupled from scenarios (0 ticket/resource references, scenario count unchanged); filters/keyword/empty/invalid-category all verified; deterministic."
+reviewer: "Quinn (Test Architect)"
+updated: "2026-07-24T01:00:00Z"
+top_issues: []
+waiver: { active: false }
+quality_score: 100
+expires: "2026-08-07T01:00:00Z"
+evidence:
+  tests_reviewed: 11
+  risks_identified: 3
+  trace: { ac_covered: [1, 2, 3, 4, 5], ac_gaps: [] }
+nfr_validation:
+  security:
+    status: PASS
+    notes: "KB carries no ticket ids, resource ids, or PII; grading key not exposed (generic per-category guidance)."
+  performance: { status: PASS, notes: "In-memory list filter; trivial." }
+  reliability: { status: PASS, notes: "Fail-fast load; empty=ok; invalid category=invalid_request; deterministic id-sorted." }
+  maintainability: { status: PASS, notes: "Mirrors loader/tool patterns; Repository ctor arg is backward-compatible." }
+recommendations:
+  immediate: []
+  future:
+    - action: "Keep KB remediation generic-by-category so it never mirrors a scenario resolution."
+      refs: ["src/contoso_support_mcp/fixtures/known_issues.yaml"]
