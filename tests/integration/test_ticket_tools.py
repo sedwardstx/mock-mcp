@@ -40,3 +40,43 @@ async def test_list_tickets():
         ids = [t["ticket_id"] for t in sc["tickets"]]
         assert "TICKET-10000001" in ids
         assert "TICKET-10000002" in ids
+
+
+async def test_search_by_status():
+    async with client_session(build_server()) as client:
+        result = await client.call_tool("search_tickets", {"status": "Active"})
+        sc = result.structuredContent
+        assert sc["status"] == "ok"
+        assert sc["total"] >= 1
+        assert all(True for _ in sc["tickets"])
+
+
+async def test_search_no_match_is_empty_not_error():
+    async with client_session(build_server()) as client:
+        result = await client.call_tool("search_tickets", {"status": "Resolved"})
+        sc = result.structuredContent
+        assert result.isError is False
+        assert sc["status"] == "ok"
+        assert sc["tickets"] == []
+        assert sc["total"] == 0
+
+
+async def test_search_invalid_filter_value():
+    async with client_session(build_server()) as client:
+        result = await client.call_tool("search_tickets", {"persona": "martian"})
+        sc = result.structuredContent
+        assert result.isError is False
+        assert sc["status"] == "invalid_request"
+        assert "windows_admin" in sc["message"]
+
+
+async def test_search_combined_persona_and_product():
+    async with client_session(build_server()) as client:
+        result = await client.call_tool(
+            "search_tickets",
+            {"persona": "azure_developer", "azure_product": "Azure Networking"},
+        )
+        sc = result.structuredContent
+        assert sc["status"] == "ok"
+        ids = [t["ticket_id"] for t in sc["tickets"]]
+        assert ids == ["TICKET-10000002"]

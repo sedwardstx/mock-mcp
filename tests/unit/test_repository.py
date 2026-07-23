@@ -29,3 +29,27 @@ def test_list_tickets_deterministic_order():
     page, _ = _repo().list_tickets(offset=0, limit=100)
     ids = [t.ticket_id for t in page]
     assert ids == sorted(ids)
+
+
+def test_search_single_filter_persona():
+    tickets, total = _repo().search_tickets(persona="windows_admin")
+    assert total == 2
+    assert all(t.persona == "windows_admin" for t in tickets)
+
+
+def test_search_combined_filters_and_semantics():
+    tickets, total = _repo().search_tickets(
+        persona="windows_admin", azure_product="Azure Virtual Machines"
+    )
+    assert total == 2
+    tickets2, total2 = _repo().search_tickets(
+        persona="azure_developer", azure_product="Azure Virtual Machines"
+    )
+    assert total2 == 0
+    assert tickets2 == []
+
+
+def test_search_deterministic_order():
+    tickets, _ = _repo().search_tickets(persona="windows_admin")
+    ids = [t.ticket_id for t in tickets]
+    assert ids == sorted(ids)
